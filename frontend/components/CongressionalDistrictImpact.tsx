@@ -174,7 +174,6 @@ export default function CongressionalDistrictImpact({ year = DEFAULT_YEAR }: Pro
                 <th className="text-left py-3 px-4 font-semibold text-gray-900">Representative</th>
                 <th className="text-right py-3 px-4 font-semibold text-gray-900">Winners</th>
                 <th className="text-right py-3 px-4 font-semibold text-gray-900">Average change</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-900">% of income</th>
               </tr>
             </thead>
             <tbody>
@@ -206,9 +205,6 @@ export default function CongressionalDistrictImpact({ year = DEFAULT_YEAR }: Pro
                   <td className="py-3 px-4 text-right text-gray-700">
                     {d.average_household_income_change >= 0 ? '+' : ''}
                     ${d.average_household_income_change.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                  </td>
-                  <td className="py-3 px-4 text-right text-gray-700">
-                    {(d.relative_household_income_change * 100).toFixed(2)}%
                   </td>
                 </tr>
               ))}
@@ -299,9 +295,7 @@ function DistrictDetailCard({
             {isPositive ? '+' : ''}
             ${avgChange.toLocaleString('en-US', { maximumFractionDigits: 0 })}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
-            {(district.relative_household_income_change * 100).toFixed(2)}% of income
-          </p>
+          <p className="text-xs text-gray-500 mt-1">per household, per year</p>
         </div>
         <div className="bg-gray-50 rounded-lg p-3">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Winners</p>

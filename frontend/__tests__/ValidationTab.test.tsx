@@ -81,6 +81,25 @@ describe('ValidationTab', () => {
       expect(screen.getByText('-$16M beginning in FY2029')).toBeInTheDocument();
     });
 
+    it('carries the budget office context moved from the policy overview', async () => {
+      renderWithClient(<ValidationTab />);
+      await screen.findByText(HEADING);
+      expect(screen.getByText(/\$220 million in tax\s+relief/)).toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: 'executive budget, Section R' }),
+      ).toHaveAttribute(
+        'href',
+        'https://gov.mt.gov/_docs/budget_budget2029/OBPPREF.pdf#page=7',
+      );
+      // policyengine-us parameter link lives in the methodology details
+      expect(
+        screen.getByRole('link', { name: 'policyengine-us', hidden: true }),
+      ).toHaveAttribute(
+        'href',
+        'https://github.com/PolicyEngine/policyengine-us/tree/main/policyengine_us/parameters/gov/states/mt/tax/income',
+      );
+    });
+
     it('keeps the methodology behind a collapsible details block', async () => {
       renderWithClient(<ValidationTab />);
       await screen.findByText(HEADING);

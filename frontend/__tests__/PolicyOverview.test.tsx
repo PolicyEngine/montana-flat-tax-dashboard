@@ -1,6 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import PolicyOverview from '../components/PolicyOverview';
+
+/** Cell texts of the table row whose first cell is `label`. */
+const rowCells = (label: string) => {
+  const row = screen.getByText(label).closest('tr');
+  if (!row) throw new Error(`no table row for ${label}`);
+  return within(row)
+    .getAllByRole('cell')
+    .map((c) => c.textContent);
+};
 
 describe('PolicyOverview', () => {
   it('renders without errors', () => {
@@ -10,44 +19,35 @@ describe('PolicyOverview', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows the phased rate path: 5.4% now, 5.0% in 2028, 4.7% from 2029', () => {
+  it('shows the changes in one table with a column per tax year', () => {
     render(<PolicyOverview />);
-    expect(screen.getAllByText('5.4%').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('5.0%').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('4.7%').length).toBeGreaterThan(0);
+    expect(screen.getByText('Changes by tax year')).toBeInTheDocument();
+    expect(screen.getByText('Current law')).toBeInTheDocument();
     expect(screen.getAllByText('Tax year 2028').length).toBeGreaterThan(0);
     expect(screen.getByText('Tax year 2029 onward')).toBeInTheDocument();
-    expect(screen.getByText('One rate on all taxable income')).toBeInTheDocument();
+    // Lower rate stays at 4.7%; the top rate steps 5.4% -> 5.0% -> 4.7%.
+    expect(rowCells('Lower income tax rate')).toEqual([
+      'Lower income tax rate', '4.7%', '4.7%', '4.7%',
+    ]);
+    expect(rowCells('Top income tax rate')).toEqual([
+      'Top income tax rate', '5.4%', '5.0%', '4.7%',
+    ]);
   });
 
   it('shows the EITC match rising from 20% to 30% of the federal credit', () => {
     render(<PolicyOverview />);
-    expect(screen.getByText('Earned income tax credit')).toBeInTheDocument();
-    expect(screen.getAllByText('20%').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('30%').length).toBeGreaterThan(0);
+    expect(rowCells('Montana EITC, share of the federal credit')).toEqual([
+      'Montana EITC, share of the federal credit', '20%', '30%', '30%',
+    ]);
   });
 
-  it('displays the parameter change table with the real MT parameter keys', () => {
-    render(<PolicyOverview />);
-    expect(screen.getByText('Parameter changes')).toBeInTheDocument();
-    expect(
-      screen.getByText('gov.states.mt.tax.income.main.single[1].rate'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('gov.states.mt.tax.income.main.joint[1].rate'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('gov.states.mt.tax.income.credits.eitc.match'),
-    ).toBeInTheDocument();
-    // Canonical-source note.
-    expect(screen.getByText(/canonical, complete parameter set/)).toBeInTheDocument();
-  });
-
-  it('reports the budget office estimates as published figures', () => {
-    render(<PolicyOverview />);
-    expect(screen.getByText('Budget office estimates')).toBeInTheDocument();
-    expect(screen.getByText(/\$117 million at full implementation/)).toBeInTheDocument();
-    expect(screen.getByText(/\$16 million beginning in fiscal year 2029/)).toBeInTheDocument();
+  it('leaves parameter keys and budget office estimates to the Validation tab', () => {
+    const { container } = render(<PolicyOverview />);
+    expect(screen.queryByText('Parameter changes')).not.toBeInTheDocument();
+    expect(screen.queryByText('Budget office estimates')).not.toBeInTheDocument();
+    const text = container.textContent ?? '';
+    expect(text).not.toMatch(/gov\.states\.mt/);
+    expect(text).not.toMatch(/\$\d+ million/);
   });
 
   it('links to the primary sources', () => {
@@ -66,13 +66,6 @@ describe('PolicyOverview', () => {
     ).toHaveAttribute(
       'href',
       'https://archive.legmt.gov/content/Sessions/69th/Contractor_index/CH0227.pdf',
-    );
-    // policyengine-us MT parameters (linked inline from the parameter-changes note)
-    expect(
-      screen.getByRole('link', { name: 'policyengine-us' }),
-    ).toHaveAttribute(
-      'href',
-      'https://github.com/PolicyEngine/policyengine-us/tree/main/policyengine_us/parameters/gov/states/mt/tax/income',
     );
   });
 });

@@ -25,13 +25,13 @@ from reform_def import DATA_DIR, REFORM_DICT, YEARS, make_reform
 XMAX = 400_000
 NPTS = 161  # $0 to $400k in $2,500 steps
 
+# Three profiles, one per outcome: a household that gains from the EITC
+# increase, one the proposal does not affect (no EITC, taxable income
+# below the top-rate threshold), and one that gains from the rate change.
 # label, employment income, age of head, married, dependent ages
 PROFILES = [
     ("Single parent, 1 child, $25k", 25_000, 30, False, [4]),
-    ("Married, 2 children, $45k", 45_000, 35, True, [9, 6]),
     ("Single, no children, $40k", 40_000, 35, False, []),
-    ("Single, no children, $90k", 90_000, 40, False, []),
-    ("Married, 2 children, $150k", 150_000, 42, True, [10, 7]),
     ("Married, no children, $300k", 300_000, 50, True, []),
 ]
 

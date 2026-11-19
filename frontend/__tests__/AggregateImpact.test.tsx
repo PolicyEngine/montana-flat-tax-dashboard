@@ -170,12 +170,17 @@ describe('AggregateImpact', () => {
     renderWithClient(<AggregateImpact triggered={true} year={2028} />);
     await screen.findByText('State revenue impact (2028)');
     fireEvent.click(screen.getByRole('button', { name: 'Poverty impact' }));
-    expect(await screen.findByText('Poverty impact (2028)')).toBeInTheDocument();
-    // All residents: 15.12% -> 14.88% = -0.24 points
-    expect(screen.getByText('15.12%')).toBeInTheDocument();
-    expect(screen.getByText('14.88%')).toBeInTheDocument();
-    expect(screen.getByText('-0.24')).toBeInTheDocument();
-    // Children: 14.89% -> 14.40% = -0.49 points
-    expect(screen.getByText('-0.49')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Poverty rates: current law vs proposal (2028)'),
+    ).toBeInTheDocument();
+    // One card per measure, each showing current law -> proposal.
+    const card = (label: string) =>
+      screen.getByText(label).parentElement?.textContent ?? '';
+    expect(card('Overall poverty')).toContain('15.12% → 14.88%');
+    expect(card('Child poverty')).toContain('14.89% → 14.40%');
+    expect(card('Deep poverty')).toContain('8.00% → 8.00%');
+    expect(card('Deep child poverty')).toContain('6.90% → 6.90%');
+    // Bar chart of percent changes, as in the other dashboards.
+    expect(screen.getByText('Change in poverty rates (%)')).toBeInTheDocument();
   });
 });

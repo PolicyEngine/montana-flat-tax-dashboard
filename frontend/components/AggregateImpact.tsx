@@ -390,7 +390,7 @@ export default function AggregateImpact({ triggered, year = DEFAULT_YEAR }: Prop
               <div className="rounded-lg p-6 border" style={{ backgroundColor: 'var(--chart-winners-bg)', borderColor: COLORS.positive }}>
                 <p className="text-sm text-gray-700 mb-2">Winners</p>
                 <p className="text-3xl font-bold" style={{ color: COLORS.gainMore5 }}>{data.winners_rate.toFixed(1)}%</p>
-                <p className="text-xs text-gray-600 mt-1">{Math.round(data.winners).toLocaleString()} residents gain</p>
+                <p className="text-xs text-gray-600 mt-1">{Math.round(data.winners).toLocaleString()} households gain</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-6 border border-gray-300">
                 <p className="text-sm text-gray-700 mb-2">No change</p>
@@ -401,7 +401,7 @@ export default function AggregateImpact({ triggered, year = DEFAULT_YEAR }: Prop
               <div className="rounded-lg p-6 border" style={{ backgroundColor: 'var(--chart-losers-bg)', borderColor: COLORS.loseMore5 }}>
                 <p className="text-sm text-gray-700 mb-2">Losers</p>
                 <p className="text-3xl font-bold" style={{ color: COLORS.loseMore5 }}>{data.losers_rate.toFixed(1)}%</p>
-                <p className="text-xs text-gray-600 mt-1">{Math.round(data.losers).toLocaleString()} residents lose</p>
+                <p className="text-xs text-gray-600 mt-1">{Math.round(data.losers).toLocaleString()} households lose</p>
               </div>
             </div>
 
@@ -431,7 +431,7 @@ export default function AggregateImpact({ triggered, year = DEFAULT_YEAR }: Prop
                   ))}
                 </div>
                 <p className="text-xs text-gray-500 mt-3 italic">
-                  Winners and losers count residents: a person gains or loses when their household&apos;s net income changes by more than $1. The model estimates the federal deduction for state and local taxes from an approximation of state income tax withheld on wages. For a small share of households that approximation falls while their computed Montana tax does not, so their modeled federal tax rises and they show as losing.
+                  The cards above count households whose net income changes by more than $1. The chart counts residents by how much their household&apos;s net income changes as a share of income; changes under 0.1% show as no change. Households that show a loss all itemize federal deductions. The model estimates their federal deduction for state and local taxes from an approximation of Montana tax withheld, which applies the single-filer schedule to each person&apos;s income. For some households that approximation falls under the proposal while their computed Montana tax does not, so their modeled federal tax rises. This is a limit of the model, not a provision of the proposal.
                 </p>
               </div>
             </div>
@@ -441,42 +441,86 @@ export default function AggregateImpact({ triggered, year = DEFAULT_YEAR }: Prop
 
       {/* ===== POVERTY IMPACT ===== */}
       {activeSection === 'poverty' && (() => {
-        const povertyRows = [
-          { label: 'All residents', group: data.poverty.poverty.all },
-          { label: 'Children (under 18)', group: data.poverty.poverty.child },
+        const pov = data.poverty;
+        const povertyMetrics = [
+          { label: 'Overall poverty', ...pov.poverty.all },
+          { label: 'Child poverty', ...pov.poverty.child },
+          { label: 'Deep poverty', ...pov.deep_poverty.all },
+          { label: 'Deep child poverty', ...pov.deep_poverty.child },
         ];
-        const fmtRate = (v: number) => `${v.toFixed(2)}%`;
-        const fmtPoints = (v: number) =>
-          Math.abs(v) < 0.005 ? '0.00' : `${v > 0 ? '+' : '-'}${Math.abs(v).toFixed(2)}`;
+        const chartData = povertyMetrics.map((m) => ({
+          ...m,
+          pctChange: m.baseline !== 0 ? ((m.reform - m.baseline) / m.baseline) * 100 : 0,
+        }));
+
+        // Nice axis around zero. The floor keeps an all-zero series from
+        // producing a zero-width axis.
+        const pctValues = chartData.map((d) => d.pctChange);
+        const minVal = Math.min(0, ...pctValues);
+        const maxVal = Math.max(0, ...pctValues);
+        const maxAbs = Math.max(Math.abs(minVal), Math.abs(maxVal), 0.1);
+        const niceStep = (() => {
+          const rough = maxAbs / 3;
+          const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+          const residual = rough / mag;
+          if (residual <= 1) return mag;
+          if (residual <= 2) return 2 * mag;
+          if (residual <= 5) return 5 * mag;
+          return 10 * mag;
+        })();
+        const niceMin = Math.floor(minVal / niceStep) * niceStep;
+        const niceMax = Math.max(Math.ceil(maxVal / niceStep) * niceStep, 0);
+        const niceTicks = Array.from(
+          { length: Math.round((niceMax - niceMin) / niceStep) + 1 },
+          (_, i) => niceMin + i * niceStep,
+        );
+        const tickDigits = niceStep >= 1 ? 0 : niceStep >= 0.1 ? 1 : 2;
+        // A tick of "-0" or "+0.0" reads as an error; show a bare zero.
+        const fmtTick = (v: number) =>
+          Math.abs(v) < niceStep / 2 ? '0%' : `${v > 0 ? '+' : ''}${v.toFixed(tickDigits)}%`;
+
+        // metrics.csv stores poverty rates already in percent
+        // (15.12 = 15.12%). Do not rescale.
+        const formatRate = (v: number) => `${v.toFixed(2)}%`;
+
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800">Poverty impact ({selectedYear})</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-300">
-                    <th className="text-left px-4 py-3 font-medium text-gray-900">Group</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-900">Current law</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-900">Proposal</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-900">Change (percentage points)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {povertyRows.map((row) => (
-                    <tr key={row.label} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 text-gray-900">{row.label}</td>
-                      <td className="px-4 py-3 text-gray-700 text-right">{fmtRate(row.group.baseline)}</td>
-                      <td className="px-4 py-3 text-gray-700 text-right">{fmtRate(row.group.reform)}</td>
-                      <td className="px-4 py-3 text-gray-700 text-right">
-                        {fmtPoints(row.group.reform - row.group.baseline)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="space-y-6">
+            {/* Current law vs proposal rates */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                Poverty rates: current law vs proposal ({selectedYear})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {povertyMetrics.map((m) => (
+                  <div key={m.label} className="rounded-lg p-4 border border-gray-200 bg-gray-50">
+                    <p className="text-sm text-gray-700 mb-1">{m.label}</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {formatRate(m.baseline)} <span className="text-gray-400 font-normal">→</span> {formatRate(m.reform)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Change in poverty rates (%)</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData} margin={CHART_MARGIN}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                    <XAxis dataKey="label" tick={TICK_STYLE} stroke="var(--chart-axis)" />
+                    <YAxis domain={[niceMin, niceMax]} ticks={niceTicks} tickFormatter={fmtTick} tick={TICK_STYLE} stroke="var(--chart-axis)" width={70} />
+                    <Tooltip content={<CustomTooltip formatter={(v) => `${v > 0 ? '+' : ''}${v.toFixed(2)}%`} />} />
+                    <ReferenceLine y={0} stroke="var(--chart-axis)" strokeWidth={1} />
+                    <Bar dataKey="pctChange" name="Change (%)" radius={[2, 2, 0, 0]}>
+                      {chartData.map((m, i) => (
+                        <Cell key={i} fill={m.pctChange <= 0 ? COLORS.positive : COLORS.negative} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              <ChartWatermark />
             </div>
             <p className="text-xs text-gray-500 italic max-w-prose">
-              Poverty uses the Supplemental Poverty Measure (SPM). The change comes from the EITC increase, a refundable credit that raises after-tax income for households with earnings; the rate cut applies to taxable income above the bracket thresholds. The dataset is calibrated mainly to tax and demographic targets, so its poverty rates can differ from Census Bureau estimates, and the change rests on a small number of sampled Montana households near the poverty threshold.
+              Poverty uses the Supplemental Poverty Measure (SPM). Deep poverty means resources below half the poverty threshold. The chart shows the percent change in each rate; a negative value means the rate falls. The change comes from the EITC increase, a refundable credit that raises after-tax income for households with earnings; the rate cut applies to taxable income above the bracket thresholds. The dataset is calibrated mainly to tax and demographic targets, so its poverty rates can differ from Census Bureau estimates, and the change rests on a small number of sampled Montana households near the poverty threshold.
             </p>
           </div>
         );

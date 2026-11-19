@@ -83,11 +83,11 @@ describe('Tab navigation', () => {
 });
 
 describe('Figures come from data files, not JSX', () => {
-  it('policy overview shows statute constants and published estimates, never model output', () => {
-    // Statutory rates and thresholds and the budget office's published
-    // estimates (written out in words, e.g. "$117 million") are allowed.
+  it('policy overview shows statute constants, never model output', () => {
+    // Statutory and proposed rates and thresholds are allowed.
     // Model-output figures, which the data files format as "-$152.3M",
-    // must not appear in the policy overview.
+    // must not appear in the policy overview. Revenue estimates,
+    // including the budget office's, live on the Validation tab.
     const { container } = renderWithClient(<PolicyOverview />);
     expect(container.textContent ?? '').not.toMatch(
       /[+-]\$\d+(\.\d+)?[BTM]\b|\$\d+\.\d+[BTM]\b/

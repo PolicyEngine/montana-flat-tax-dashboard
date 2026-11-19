@@ -70,10 +70,16 @@ change and the EITC increase separately.
 - The dataset is calibrated mainly to tax and demographic targets. Its poverty
   rates can differ from Census Bureau estimates, and poverty changes rest on a
   small number of sampled households.
-- About 3% of households show a small loss. The model estimates the federal
-  deduction for state and local taxes from an approximation of state income
-  tax withheld on wages. For those households the approximation falls while
-  their computed Montana tax does not, so their modeled federal tax rises.
+- About 3% of households show a loss (about $57 a year on average in tax
+  year 2029). All of them itemize federal deductions. The model estimates the
+  federal deduction for state and local taxes from `mt_withheld_income_tax`,
+  which applies the single-filer schedule to each person's income, not from
+  the household's computed Montana tax. Under the proposal that approximation
+  falls for these households while their computed Montana tax mostly does
+  not, so their modeled federal tax rises. This is a limit of the model, not
+  a provision of the proposal. The count also shifts by about 1,100
+  households with the order in which variables are calculated, so
+  `pipeline.py` keeps a fixed order.
 - The household calculator calls the public PolicyEngine API
   (`api.policyengine.org`), which runs the current model version rather than
   the pinned one. The example households are precomputed with the pinned

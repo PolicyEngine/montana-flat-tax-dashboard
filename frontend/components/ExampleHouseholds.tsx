@@ -149,7 +149,7 @@ export default function ExampleHouseholds({
         profile into the calculator and render its net-income chart
         instantly. Charts come from precomputed values; no live API call.
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {data.households.map((h, i) => {
           const isGain = h.net_income_change > 0;
           const isSelected = selectedLabel === h.label;

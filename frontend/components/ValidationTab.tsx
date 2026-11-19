@@ -155,6 +155,29 @@ export default function ValidationTab() {
           final payments and refunds from another, so the two do not line up
           one to one.
         </p>
+        <p className="text-xs text-gray-500 mt-2 max-w-prose">
+          The budget office figures come from the{' '}
+          <a
+            className="text-primary-600 underline"
+            href={REFERENCE_LINKS.budgetReference}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            executive budget, Section R
+          </a>
+          . The{' '}
+          <a
+            className="text-primary-600 underline"
+            href={REFERENCE_LINKS.governorLetter}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            governor&apos;s letter
+          </a>{' '}
+          describes the two proposals together as $220 million in tax
+          relief. The budget documents do not state the period that figure
+          covers.
+        </p>
       </div>
 
       <details className="rounded-lg border border-gray-200 bg-gray-50 px-5 py-4">
@@ -219,9 +242,18 @@ export default function ValidationTab() {
             </table>
           </div>
           <p>
-            The reform changes the top rate for all five filing statuses and
-            the EITC match (reform.json at the repository root is the
-            canonical parameter set). The household calculator uses the
+            The reform changes two sets of Montana income tax parameters in{' '}
+            <a
+              className="text-primary-600 underline"
+              href={REFERENCE_LINKS.peParameters}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              policyengine-us
+            </a>
+            : the top rate for all five filing statuses and the EITC match
+            (reform.json at the repository root is the canonical parameter
+            set). The household calculator uses the
             current PolicyEngine API, whose model version can differ from the
             pinned run.
           </p>
