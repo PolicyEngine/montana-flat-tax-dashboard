@@ -9,12 +9,15 @@ interface Props {
   year?: ReformYear;
 }
 
-// Montana representatives (119th Congress).
+// Montana representatives for the 120th Congress (convenes January 3, 2027),
+// as elected on November 3, 2026. Maintained by hand: update after each
+// election. The proposal's tax years (2028 and 2029) begin during this
+// Congress.
 const MT_REPRESENTATIVES: Record<
   string,
   { name: string; party: 'R' | 'D'; region: string }
 > = {
-  '1': { name: 'Ryan Zinke', party: 'R', region: 'Western Montana' },
+  '1': { name: 'Sam Forstag', party: 'D', region: 'Western Montana' },
   '2': { name: 'Troy Downing', party: 'R', region: 'Eastern Montana' },
 };
 
@@ -221,7 +224,8 @@ export default function CongressionalDistrictImpact({ year = DEFAULT_YEAR }: Pro
         datasets, from the same state-calibrated family as the statewide
         estimate. District figures may not exactly aggregate to
         the statewide figure because each district file is calibrated
-        independently.
+        independently. Representatives are those elected in November 2026
+        to the 120th Congress, which convenes in January 2027.
       </p>
     </div>
   );
