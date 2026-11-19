@@ -9,9 +9,12 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH !== undefined
 
 const nextConfig = {
   ...(basePath ? { basePath } : {}),
-  // Set the output file tracing root to this project's frontend directory
-  // to avoid issues with lockfiles in parent directories
-  outputFileTracingRoot: path.join(__dirname),
+  // Locally, pin the output file tracing root to this directory so
+  // lockfiles in parent directories are ignored. On Vercel the project
+  // builds from the repository with `frontend` as its root directory,
+  // and the builder needs the default (repository) tracing root: with
+  // this set it looks for `.next` at the repository root and fails.
+  ...(process.env.VERCEL ? {} : { outputFileTracingRoot: path.join(__dirname) }),
   // Allow external images from policyengine.org for optimization
   images: {
     remotePatterns: [
