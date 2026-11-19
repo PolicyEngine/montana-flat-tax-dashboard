@@ -336,7 +336,7 @@ export default function MTDistrictChoroplethMap({
       )}
 
       <p className="text-xs text-gray-500 text-center mt-4">
-        Average household impact of Montana&apos;s flat 4.7% income tax vs
+        Average household impact of the Montana income tax proposal vs
         current law, by congressional district (119th Congress)
       </p>
     </div>

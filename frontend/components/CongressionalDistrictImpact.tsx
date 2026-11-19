@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import MTDistrictMap, { MTDistrictData } from './DynamicDistrictMap';
 import ChartWatermark from './ChartWatermark';
+import { DEFAULT_YEAR, YEAR_SUMMARY, type ReformYear } from '@/lib/montana';
 
 interface Props {
-  year?: number;
+  year?: ReformYear;
 }
 
 // Montana representatives (119th Congress).
@@ -23,7 +24,7 @@ function partyColor(party: 'R' | 'D' | undefined) {
   return 'var(--party-none)';
 }
 
-export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
+export default function CongressionalDistrictImpact({ year = DEFAULT_YEAR }: Props) {
   const [data, setData] = useState<MTDistrictData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,9 +124,9 @@ export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
           Montana congressional district impacts ({year})
         </h3>
         <p className="text-gray-600">
-          Average household impact by congressional district under the{' '}
-          <strong>flat 4.7% income tax</strong> vs. current law. Hover over a
-          district for details and click to pin.
+          Average household impact by congressional district under the
+          proposal for tax year {year} ({YEAR_SUMMARY[year]}) vs. current law.
+          Hover over a district for details and click to pin.
         </p>
       </div>
 
@@ -217,8 +218,8 @@ export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
       <p className="text-xs text-gray-500">
         Winners are households whose net income rises, matching the statewide
         tab. District estimates use PolicyEngine&apos;s district-calibrated
-        datasets for tax year 2028, from the same state-calibrated family as
-        the statewide estimate. District figures may not exactly aggregate to
+        datasets, from the same state-calibrated family as the statewide
+        estimate. District figures may not exactly aggregate to
         the statewide figure because each district file is calibrated
         independently.
       </p>

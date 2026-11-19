@@ -1,36 +1,30 @@
 'use client';
 
 /**
- * Validation tab — reconciles this dashboard's pinned Montana run
- * against the Montana Department of Revenue's own published revenue
- * estimate.
+ * Validation tab: compares this dashboard's pinned Montana runs with
+ * the estimates the Governor's Office of Budget and Program Planning
+ * (OBPP) published in the 2029 biennium executive budget.
  *
- * Data source: public/data/validation.json (schema_version 3), read
- * via useValidation. While the file is absent or carries an older
- * schema, the tab renders a graceful "pending pinned run" state built
- * from the external anchor constants below.
+ * Data source: public/data/validation.json (schema_version 4), read via
+ * useValidation. While the file is absent or carries an older schema,
+ * the tab renders a "pending pinned run" state alongside the published
+ * OBPP figures.
  *
- * The anchor constants are external published figures (the Montana DOR
- * estimate and the calibrated baseline) — not model output of this
- * dashboard.
+ * The OBPP figures are external published constants (lib/montana.ts),
+ * not model output of this dashboard.
  */
 
 import { useValidation } from '@/hooks/useValidation';
 import {
-  DOR_ANCHOR_ANNUAL_COST,
-  DOR_ANCHOR_LABEL,
+  FLAT_RATE_YEAR,
+  OBPP_INCOME_TAX_FORECAST,
+  OBPP_LABEL,
+  REFERENCE_LINKS,
   REFORM_START_YEAR,
 } from '@/lib/montana';
+import type { ValidationRun } from '@/lib/types';
 
-/** Fallback pinned-run figure used only until validation.json ships.
- *  Sourced from the verified MT.h5 run described in the project brief. */
-const FALLBACK_PINNED = {
-  label: 'This dashboard (pinned MT.h5 run)',
-  year: REFORM_START_YEAR,
-  net_cost: -118_200_000,
-  poverty_percent_change: 0,
-  child_poverty_percent_change: 0,
-};
+const PENDING = 'Pending pinned run';
 
 const fmtM = (v: number) => {
   const abs = Math.abs(v);
@@ -39,38 +33,24 @@ const fmtM = (v: number) => {
   return `${sign}$${(abs / 1e6).toFixed(1)}M`;
 };
 
-function VerdictTile({
-  title,
-  status,
-  value,
-  detail,
-  tone,
-}: {
+const fmtLevel = (v: number) => `$${(v / 1e9).toFixed(2)}B`;
+
+function Tile({ title, value, detail, pending }: {
   title: string;
-  status: string;
   value: string;
   detail: string;
-  tone: 'good' | 'pending' | 'neutral';
+  pending: boolean;
 }) {
-  const toneClasses =
-    tone === 'good'
-      ? 'bg-green-50 border-success'
-      : tone === 'pending'
-        ? 'bg-amber-50 border-amber-300'
-        : 'bg-gray-50 border-gray-300';
-  const statusClasses =
-    tone === 'good'
-      ? 'text-green-700'
-      : tone === 'pending'
-        ? 'text-amber-700'
-        : 'text-gray-600';
   return (
-    <div className={`rounded-lg p-5 border ${toneClasses}`}>
+    <div
+      className={`rounded-lg p-5 border ${
+        pending ? 'bg-amber-50 border-amber-300' : 'bg-gray-50 border-gray-300'
+      }`}
+    >
       <p className="text-sm text-gray-700">{title}</p>
-      <p className={`text-sm font-semibold uppercase tracking-wide mt-0.5 ${statusClasses}`}>
-        {status}
+      <p className={`text-2xl font-bold mt-2 ${pending ? 'text-amber-700' : 'text-gray-900'}`}>
+        {value}
       </p>
-      <p className="text-2xl font-bold text-gray-900 mt-2">{value}</p>
       <p className="text-xs text-gray-600 mt-2 leading-5">{detail}</p>
     </div>
   );
@@ -90,75 +70,90 @@ export default function ValidationTab() {
     );
   }
 
-  const hasPinned = validation?.pinned_run != null;
-  const pinnedRun = validation?.pinned_run ?? FALLBACK_PINNED;
-  const anchorCost = validation?.expected_band?.net_cost ?? DOR_ANCHOR_ANNUAL_COST;
-  const anchorLabel = validation?.expected_band?.source ?? DOR_ANCHOR_LABEL;
+  const runFor = (year: number): ValidationRun | undefined =>
+    validation?.runs.find((r) => r.year === year);
+  const first = runFor(REFORM_START_YEAR);
+  const flat = runFor(FLAT_RATE_YEAR);
   const provenance = validation?.provenance ?? null;
+  const show = (v: number | undefined) => (v === undefined ? PENDING : fmtM(v));
+
+  const rows = [
+    {
+      provision: 'Top rate to 5.0%',
+      ours: `Tax year ${REFORM_START_YEAR}: ${show(first?.rate_cut_state_revenue_impact)}`,
+      obpp: 'About -$12M in FY2028 and -$72M in FY2029',
+    },
+    {
+      provision: 'Flat 4.7% rate',
+      ours: `Tax year ${FLAT_RATE_YEAR}: ${show(flat?.rate_cut_state_revenue_impact)}`,
+      obpp: 'About -$117M at full implementation in FY2030',
+    },
+    {
+      provision: 'EITC to 30% of the federal credit',
+      ours: `Tax year ${REFORM_START_YEAR}: ${show(first?.eitc_state_revenue_impact)}; tax year ${FLAT_RATE_YEAR}: ${show(flat?.eitc_state_revenue_impact)}`,
+      obpp: '-$16M beginning in FY2029',
+    },
+  ];
 
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-primary mb-2">Validation</h2>
         <p className="text-gray-600 max-w-prose">
-          How this dashboard&apos;s pinned Montana run for tax year{' '}
-          {REFORM_START_YEAR} was reconciled against the Montana Department
-          of Revenue&apos;s own published revenue estimate.
+          How this dashboard&apos;s pinned Montana runs compare with the
+          estimates published by the Governor&apos;s Office of Budget and
+          Program Planning.
         </p>
       </div>
 
-      {/* Verdict strip */}
+      {/* Pinned run totals */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <VerdictTile
-          title="Pinned run (this dashboard)"
-          status={hasPinned ? 'Pinned run' : 'Pending pinned run'}
-          value={fmtM(pinnedRun.net_cost)}
-          detail={`Montana state income-tax revenue change for ${pinnedRun.year}, on the state-calibrated MT.h5 dataset.`}
-          tone={hasPinned ? 'neutral' : 'pending'}
+        <Tile
+          title={`Pinned run, tax year ${REFORM_START_YEAR}`}
+          value={show(first?.state_revenue_impact)}
+          detail="Montana income tax revenue change with the top rate at 5.0% and the EITC at 30% of the federal credit."
+          pending={!first}
         />
-        <VerdictTile
-          title="External anchor: Montana DOR"
-          status="Published estimate"
-          value={fmtM(anchorCost)}
-          detail={`${anchorLabel}. FY2029 corresponds approximately to tax year ${REFORM_START_YEAR}.`}
-          tone="neutral"
+        <Tile
+          title={`Pinned run, tax year ${FLAT_RATE_YEAR}`}
+          value={show(flat?.state_revenue_impact)}
+          detail="Montana income tax revenue change with the flat 4.7% rate and the EITC at 30% of the federal credit."
+          pending={!flat}
         />
       </div>
 
       {/* Comparison table */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800 mb-3">
-          Pinned run vs Montana DOR estimate
+          Pinned runs vs budget office estimates
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-300">
-                <th className="text-left px-4 py-3 font-medium text-gray-900">Source</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-900">Basis</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-900">Annual revenue change</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-900">Provision</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-900">This dashboard</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-900">Budget office</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50 transition-colors">
-                <td className="px-4 py-3 text-gray-900">This dashboard (pinned MT.h5 run)</td>
-                <td className="px-4 py-3 text-gray-700">Tax year {pinnedRun.year}</td>
-                <td className={`px-4 py-3 text-right ${hasPinned ? 'text-gray-700' : 'text-gray-400 italic'}`}>
-                  {hasPinned ? fmtM(pinnedRun.net_cost) : 'Pending pinned run'}
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-50 transition-colors">
-                <td className="px-4 py-3 text-gray-900">Montana Department of Revenue</td>
-                <td className="px-4 py-3 text-gray-700">2029 Biennium Outlook, FY2029</td>
-                <td className="px-4 py-3 text-gray-700 text-right">{fmtM(anchorCost)}</td>
-              </tr>
+              {rows.map((row) => (
+                <tr key={row.provision} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 text-gray-900">{row.provision}</td>
+                  <td className="px-4 py-3 text-gray-700">{row.ours}</td>
+                  <td className="px-4 py-3 text-gray-700">{row.obpp}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 italic">
-          Both figures are Montana&apos;s own annual revenue change (negative
-          = revenue loss). The federal SALT interaction accrues to the
-          federal government and is excluded here.
+        <p className="text-xs text-gray-500 mt-2 italic max-w-prose">
+          All figures are changes in Montana&apos;s own income tax revenue
+          (negative = revenue loss). This dashboard reports tax-year
+          liabilities. The budget office reports fiscal years, which run
+          July through June and combine withholding from one tax year with
+          final payments and refunds from another, so the two do not line up
+          one to one.
         </p>
       </div>
 
@@ -168,39 +163,67 @@ export default function ValidationTab() {
         </summary>
         <div className="mt-3 space-y-3 text-sm text-gray-700 max-w-prose">
           <p>
-            Static analysis with no behavioral responses, Montana only,
-            using the state-calibrated dataset. The revenue figure is
-            Montana&apos;s own income-tax change; poverty uses the
-            Supplemental Poverty Measure (SPM) and moves negligibly for a
-            rate cut on higher earners.
+            Static analysis with no behavioral responses, Montana only, on a
+            dataset calibrated to Montana. Each provision is also run on its
+            own against current law. Poverty uses the Supplemental Poverty
+            Measure (SPM).
+          </p>
+          <p>
+            The pinned run&apos;s current-law Montana income tax is{' '}
+            {flat?.baseline_state_income_tax !== undefined
+              ? fmtLevel(flat.baseline_state_income_tax)
+              : PENDING}{' '}
+            for tax year {FLAT_RATE_YEAR}. The budget office forecasts{' '}
+            {fmtLevel(OBPP_INCOME_TAX_FORECAST.fy2029)} of individual income
+            tax revenue in fiscal year 2029 (
+            <a
+              className="text-primary-600 underline"
+              href={REFERENCE_LINKS.budgetVolume2}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Volume 2
+            </a>
+            ).
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <tbody className="divide-y divide-gray-200">
                 <tr>
                   <td className="px-3 py-2 text-gray-500">Pinned run model</td>
-                  <td className="px-3 py-2">{provenance ? `policyengine-us ${provenance.policyengine_us}` : 'Pending pinned run'}</td>
+                  <td className="px-3 py-2">{provenance ? `policyengine-us ${provenance.policyengine_us}` : PENDING}</td>
                 </tr>
                 <tr>
                   <td className="px-3 py-2 text-gray-500">Pinned run dataset</td>
-                  <td className="px-3 py-2">{provenance?.dataset ?? 'Pending pinned run'}</td>
+                  <td className="px-3 py-2 break-all">{provenance?.dataset ?? PENDING}</td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-gray-500">External anchor</td>
-                  <td className="px-3 py-2">{anchorLabel}</td>
+                  <td className="px-3 py-2 text-gray-500">Budget office source</td>
+                  <td className="px-3 py-2">
+                    <a
+                      className="text-primary-600 underline"
+                      href={REFERENCE_LINKS.budgetReference}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {OBPP_LABEL}
+                    </a>
+                    , Section R
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-3 py-2 text-gray-500">Pinned run computed</td>
-                  <td className="px-3 py-2">{provenance?.run_timestamp ?? 'Pending pinned run'}</td>
+                  <td className="px-3 py-2">{provenance?.run_timestamp ?? PENDING}</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p>
-            The reform is the flat {`${(4.7).toFixed(1)}%`} rate applied to
-            both ordinary-rate brackets across all five filing statuses
-            (reform.json at the repository root is the canonical parameter
-            set).
+            The reform changes the top rate for all five filing statuses and
+            the EITC match (reform.json at the repository root is the
+            canonical parameter set). The household calculator uses the
+            current PolicyEngine API, whose model version can differ from the
+            pinned run.
           </p>
         </div>
       </details>

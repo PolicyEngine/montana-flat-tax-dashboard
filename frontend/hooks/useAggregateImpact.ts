@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import parseCSV from "@/lib/parseCSV";
 import { AggregateImpactResponse, IntraDecileAll, IntraDecileDeciles } from "@/lib/types";
+import { DEFAULT_YEAR } from "@/lib/montana";
 
 /** Canonical low-to-high order for the income-bracket table. The
  *  underlying CSV from the pipeline can return brackets in any
@@ -49,8 +50,8 @@ function buildAggregateResponse(year: number): Promise<AggregateImpactResponse> 
     const wl = winnersLosers.filter((r) => r.year === year);
     const ib = incomeBrackets.filter((r) => r.year === year);
 
-    // Render gracefully when the pipeline has only produced some years
-    // (e.g. 2026 only at first): surface a typed, friendly error.
+    // Render gracefully when the pipeline has not produced this year:
+    // surface a typed, friendly error.
     if (met.length === 0 || wl.length === 0) {
       throw new YearNotAvailableError(year);
     }
@@ -94,6 +95,8 @@ function buildAggregateResponse(year: number): Promise<AggregateImpactResponse> 
         budgetary_impact: m.budgetary_impact,
         federal_tax_revenue_impact: m.federal_tax_revenue_impact ?? 0,
         state_tax_revenue_impact: m.state_tax_revenue_impact ?? m.budgetary_impact,
+        rate_cut_state_revenue_impact: m.rate_cut_state_revenue_impact ?? null,
+        eitc_state_revenue_impact: m.eitc_state_revenue_impact ?? null,
         tax_revenue_impact: m.tax_revenue_impact,
         households: m.households,
       },
@@ -153,7 +156,7 @@ function buildAggregateResponse(year: number): Promise<AggregateImpactResponse> 
 
 export function useAggregateImpact(
   enabled: boolean,
-  year: number = 2028,
+  year: number = DEFAULT_YEAR,
 ) {
   return useQuery<AggregateImpactResponse>({
     queryKey: ["aggregateImpact", year],
@@ -164,37 +167,4 @@ export function useAggregateImpact(
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
-}
-
-/** Sum a metric across the 2028-2035 window. Returns null unless the
- *  pipeline has produced rows for every year in the window, so the
- *  multi-year cards hide gracefully while only 2028 exists. */
-function useTenYearMetric(enabled: boolean, metric: string) {
-  return useQuery<number | null>({
-    queryKey: ["multiYear", metric],
-    queryFn: async () => {
-      const rows = await fetchCSV("metrics.csv");
-      const years = Array.from({ length: 8 }, (_, i) => 2028 + i);
-      const perYear = years.map((year) =>
-        rows.find((r) => r.year === year && r.metric === metric)
-      );
-      if (perYear.some((row) => row === undefined)) return null;
-      return perYear.reduce((sum, row) => sum + (row!.value as number), 0);
-    },
-    enabled,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
-}
-
-export function useTenYearTotal(enabled: boolean) {
-  return useTenYearMetric(enabled, "budgetary_impact");
-}
-
-export function useTenYearFederalTotal(enabled: boolean) {
-  return useTenYearMetric(enabled, "federal_tax_revenue_impact");
-}
-
-export function useTenYearStateTotal(enabled: boolean) {
-  return useTenYearMetric(enabled, "state_tax_revenue_impact");
 }

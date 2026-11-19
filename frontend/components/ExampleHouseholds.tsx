@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { HouseholdImpactResponse } from '@/lib/types';
+import { DEFAULT_YEAR, YEAR_SUMMARY, type ReformYear } from '@/lib/montana';
 
 export interface ExampleHouseholdProfile {
   label: string;
@@ -20,7 +21,7 @@ interface ChartArrays {
   provisions?: import('@/lib/types').ProvisionSeries;
 }
 
-/** One record in public/data/example_households.json (produced by
+/** One record in public/data/example_households_{year}.json (produced by
  *  scripts/compute_example_households.py). */
 interface ExampleHousehold {
   label: string;
@@ -62,7 +63,7 @@ const fmtSigned = (v: number) => {
 
 /** Build a HouseholdImpactResponse-shaped payload from one of the
  *  precomputed example records, so the existing ImpactAnalysis chart
- *  can render it without firing a live Modal call. */
+ *  can render it without firing a live API call. */
 function toImpactResponse(h: ExampleHousehold): HouseholdImpactResponse {
   const xMax = h.chart.income_range[h.chart.income_range.length - 1];
   const stateTaxChange =
@@ -97,11 +98,14 @@ interface Props {
   /** Label of the currently active example, so the matching card can
    *  highlight itself. */
   selectedLabel?: string | null;
+  /** Tax year whose precomputed examples to load. */
+  year?: ReformYear;
 }
 
 export default function ExampleHouseholds({
   onSelect,
   selectedLabel,
+  year = DEFAULT_YEAR,
 }: Props) {
   const [data, setData] = useState<Payload | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -111,17 +115,27 @@ export default function ExampleHouseholds({
       process.env.NEXT_PUBLIC_BASE_PATH !== undefined
         ? process.env.NEXT_PUBLIC_BASE_PATH
         : '/us/montana-flat-tax-dashboard';
-    fetch(`${basePath}/data/example_households.json`)
+    let cancelled = false;
+    fetch(`${basePath}/data/example_households_${year}.json`)
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load (${res.status})`);
         return res.json();
       })
-      .then((j: Payload) => setData(j))
-      .catch((e) => setError(e.message));
-  }, []);
+      .then((j: Payload) => {
+        if (cancelled) return;
+        setData(j);
+        setError(null);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [year]);
 
   if (error) return null;
-  if (!data) return null;
+  if (!data || data.year !== year) return null;
 
   const stateCode = data.state_code ?? 'MT';
 
@@ -131,9 +145,9 @@ export default function ExampleHouseholds({
         Example households
       </h3>
       <p className="text-sm text-gray-600 mb-3">
-        Click an example to load its profile into the calculator and render its
-        net-income chart instantly. Charts come from precomputed values; no
-        live API call.
+        Tax year {year} ({YEAR_SUMMARY[year]}). Click an example to load its
+        profile into the calculator and render its net-income chart
+        instantly. Charts come from precomputed values; no live API call.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {data.households.map((h, i) => {
@@ -183,11 +197,11 @@ export default function ExampleHouseholds({
         })}
       </div>
       <p className="text-[11px] text-gray-500 italic mt-2">
-        Income change is the Montana flat 4.7% income tax minus current law.
-        Single parents file head of household. Married couples file jointly.
-        Examples use Montana residence. Only households with income above the
-        bracket thresholds see a change; edit the form below for your own
-        household.
+        Income change is the proposal minus current law. Single parents file
+        head of household. Married couples file jointly. Examples use Montana
+        residence and employment income only. Households gain when they
+        receive the earned income tax credit or have taxable income above the
+        bracket thresholds; edit the form below for your own household.
       </p>
     </div>
   );

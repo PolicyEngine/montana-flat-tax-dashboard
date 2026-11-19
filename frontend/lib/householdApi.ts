@@ -1,23 +1,24 @@
 /**
- * Live household calculator for the Montana flat income tax, built on
- * the public PolicyEngine API (https://api.policyengine.org/us).
+ * Live household calculator for Montana's proposed flat income tax and
+ * earned income tax credit increase, built on the public PolicyEngine
+ * API (https://api.policyengine.org/us).
  *
- * The EDAA template hit a Modal endpoint that does not exist for
- * Montana. Instead, for each request we build a Montana household from
- * the form inputs and call the public /calculate endpoint twice —
- * once under current law (baseline) and once under the flat-tax reform
- * (MT_FLAT_TAX_REFORM) — then take the difference:
+ * For each request we build a Montana household from the form inputs
+ * and call the public /calculate endpoint twice: once under current law
+ * (baseline) and once under the proposal (MT_REFORM). The impact is
  *
- *   impact = reform (flat 4.7%) - baseline (current law)
+ *   impact = reform (governor's proposal) - baseline (current law)
  *
  * We compute both a point value (at the entered income) and a sweep
- * across employment income, so the existing ImpactAnalysis chart can
- * render the earnings curve. mt_income_tax and household_net_income are
- * the variables of interest; a lower Montana tax is a gain, so a
- * reduction shows as a positive net-income change.
+ * across employment income, so the ImpactAnalysis chart can render the
+ * earnings curve. The change is split by provision from the household's
+ * point of view (positive = gain): the Montana earned income tax credit
+ * change, the remaining Montana income tax change (the rate change),
+ * and the federal income tax change.
  */
 
-import { MT_FLAT_TAX_REFORM, POLICYENGINE_API_BASE } from './montana';
+import { MT_REFORM, POLICYENGINE_API_BASE } from './montana';
+import type { ProvisionBreakdown, ProvisionSeries } from './types';
 
 export interface HouseholdSweepPayload {
   age_head: number;
@@ -36,6 +37,9 @@ export interface HouseholdSweepResult {
   state_income_tax_change: number[];
   /** Reform minus baseline federal income tax at each sweep point. */
   income_tax_change: number[];
+  /** Per-provision gains at each sweep point (sum to the net change). */
+  provisions: ProvisionSeries;
+  provisions_at_income: ProvisionBreakdown;
   benefit_at_income: {
     baseline: number;
     reform: number;
@@ -80,9 +84,9 @@ interface PeHousehold {
 
 /**
  * Build a PolicyEngine household for the given inputs, requesting
- * household_net_income, mt_income_tax, and income_tax for `year`. The
- * head's employment_income is set to `income`; spouse and dependents
- * carry zero employment income.
+ * household_net_income, mt_income_tax, income_tax, and (per person)
+ * mt_eitc for `year`. The head's employment_income is set to `income`;
+ * spouse and dependents carry zero employment income.
  */
 function buildHousehold(
   payload: HouseholdSweepPayload,
@@ -93,6 +97,7 @@ function buildHousehold(
     head: {
       age: { [yr]: payload.age_head },
       employment_income: { [yr]: payload.income },
+      mt_eitc: { [yr]: null },
     },
   };
   const memberNames = ['head'];
@@ -101,6 +106,7 @@ function buildHousehold(
     people.spouse = {
       age: { [yr]: payload.age_spouse },
       employment_income: { [yr]: 0 },
+      mt_eitc: { [yr]: null },
     };
     memberNames.push('spouse');
   }
@@ -178,6 +184,15 @@ function readTaxUnit(h: PeHousehold, key: string, year: number): number {
   return typeof v === 'number' ? v : 0;
 }
 
+/** Sum a person-level variable across everyone in the household. */
+function readPeopleSum(h: PeHousehold, key: string, year: number): number {
+  const yr = String(year);
+  return Object.values(h.people ?? {}).reduce((sum, person) => {
+    const v = person?.[key]?.[yr];
+    return sum + (typeof v === 'number' ? v : 0);
+  }, 0);
+}
+
 function readHousehold(h: PeHousehold, key: string, year: number): number {
   const yr = String(year);
   const hh = h.households?.household as
@@ -212,7 +227,7 @@ export async function runHouseholdSweep(
       const hh = buildHousehold({ ...payload, income }, year);
       const [baseline, reform] = await Promise.all([
         calculate(hh, null),
-        calculate(hh, MT_FLAT_TAX_REFORM),
+        calculate(hh, MT_REFORM),
       ]);
       const baseNet = readHousehold(baseline, 'household_net_income', year);
       const reformNet = readHousehold(reform, 'household_net_income', year);
@@ -220,11 +235,22 @@ export async function runHouseholdSweep(
       const reformState = readTaxUnit(reform, 'mt_income_tax', year);
       const baseFed = readTaxUnit(baseline, 'income_tax', year);
       const reformFed = readTaxUnit(reform, 'income_tax', year);
+      // mt_income_tax is net of refundable credits, so the credit gain
+      // is separated out and the rest is attributed to the rate change.
+      const eitcGain =
+        readPeopleSum(reform, 'mt_eitc', year) -
+        readPeopleSum(baseline, 'mt_eitc', year);
+      const rateGain = -(reformState - baseState) - eitcGain;
       return {
         income,
         netIncomeChange: reformNet - baseNet,
         stateTaxChange: reformState - baseState,
         federalTaxChange: reformFed - baseFed,
+        provisions: {
+          rate_change: rateGain,
+          eitc_change: eitcGain,
+          federal_tax_change: -(reformFed - baseFed),
+        } as ProvisionBreakdown,
         baseNet,
         reformNet,
         baseState,
@@ -249,6 +275,12 @@ export async function runHouseholdSweep(
     net_income_change,
     state_income_tax_change,
     income_tax_change,
+    provisions: {
+      rate_change: results.map((r) => r.provisions.rate_change),
+      eitc_change: results.map((r) => r.provisions.eitc_change),
+      federal_tax_change: results.map((r) => r.provisions.federal_tax_change),
+    },
+    provisions_at_income: point.provisions,
     benefit_at_income: {
       baseline: point.baseNet,
       reform: point.reformNet,

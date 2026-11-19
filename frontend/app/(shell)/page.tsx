@@ -9,6 +9,11 @@ import ValidationTab from '@/components/ValidationTab';
 import ExampleHouseholds, { type ExampleHouseholdProfile } from '@/components/ExampleHouseholds';
 import type { HouseholdRequest, HouseholdImpactResponse } from '@/lib/types';
 import { parseHashParams, type TabId } from '@/lib/embedding';
+import YearToggle from '@/components/YearToggle';
+import { DEFAULT_YEAR, type ReformYear } from '@/lib/montana';
+
+/** Tabs whose results depend on the selected tax year. */
+const YEAR_TABS: TabId[] = ['impact', 'aggregate', 'districts'];
 
 export default function Home() {
   // Initialize the active tab from the URL hash (embedding support)
@@ -16,6 +21,10 @@ export default function Home() {
     if (typeof window === 'undefined') return 'policy';
     return parseHashParams(window.location.hash).tab ?? 'policy';
   });
+
+  // The proposal phases in, so the household, statewide, and district
+  // tabs share one tax-year selection.
+  const [year, setYear] = useState<ReformYear>(DEFAULT_YEAR);
 
   const TAB_CONFIG = [
     { id: 'policy' as const, label: 'Policy overview' },
@@ -39,7 +48,7 @@ export default function Home() {
             Montana flat income tax dashboard
           </h1>
           <p className="text-lg opacity-90">
-            Estimate the impact of Montana&apos;s proposed flat 4.7% individual income tax (tax year 2028)
+            Estimate the impact of Gov. Gianforte&apos;s proposed flat 4.7% income tax rate and earned income tax credit increase
           </p>
         </div>
       </section>
@@ -76,14 +85,19 @@ export default function Home() {
           aria-labelledby={`tab-${activeTab}`}
           className="bg-white rounded-lg shadow-md p-6"
         >
+          {YEAR_TABS.includes(activeTab) && (
+            <div className="mb-6">
+              <YearToggle year={year} onChange={setYear} />
+            </div>
+          )}
           {activeTab === 'policy' ? (
             <PolicyOverview />
           ) : activeTab === 'impact' ? (
-            <HouseholdImpactTab />
+            <HouseholdImpactTab year={year} />
           ) : activeTab === 'aggregate' ? (
-            <StatewideImpactTab />
+            <StatewideImpactTab year={year} />
           ) : activeTab === 'districts' ? (
-            <CongressionalDistrictImpact />
+            <CongressionalDistrictImpact year={year} />
           ) : (
             <ValidationTab />
           )}
@@ -94,7 +108,7 @@ export default function Home() {
 }
 
 /** Household impact tab */
-function HouseholdImpactTab() {
+function HouseholdImpactTab({ year }: { year: ReformYear }) {
   // Initialize state from hash parameters if present
   // All households are Montana residents; the state is locked to MT.
   const getInitialValues = () => {
@@ -126,6 +140,18 @@ function HouseholdImpactTab() {
     useState<HouseholdImpactResponse | null>(null);
   const [selectedExampleLabel, setSelectedExampleLabel] = useState<string | null>(null);
   const impactRef = useRef<HTMLDivElement | null>(null);
+
+  // Results are specific to a tax year. When the year changes, clear the
+  // displayed result (the form inputs stay) so nothing from the other
+  // year remains on screen.
+  const [resultsYear, setResultsYear] = useState(year);
+  if (resultsYear !== year) {
+    setResultsYear(year);
+    setSubmittedRequest(null);
+    setPrecomputedImpact(null);
+    setSelectedExampleLabel(null);
+    setTriggered(false);
+  }
 
   useEffect(() => {
     if (selectedExampleLabel && impactRef.current) {
@@ -187,7 +213,7 @@ function HouseholdImpactTab() {
     age_spouse: married ? ageSpouse : null,
     dependent_ages: dependentAges,
     income,
-    year: 2028,
+    year,
     max_earnings: maxEarnings,
     state_code: 'MT',
   });
@@ -220,7 +246,7 @@ function HouseholdImpactTab() {
       age_spouse: profile.married ? 35 : null,
       dependent_ages: profile.dependents,
       income: profile.income,
-      year: 2028,
+      year,
       max_earnings: exampleMaxEarnings,
       state_code: exampleState,
     });
@@ -236,6 +262,7 @@ function HouseholdImpactTab() {
       <ExampleHouseholds
         onSelect={handleSelectExample}
         selectedLabel={selectedExampleLabel}
+        year={year}
       />
 
       {/* Inline household config */}
@@ -329,7 +356,7 @@ function HouseholdImpactTab() {
             />
             {dependentAges.length > 0 && (
               <div className="mt-2">
-                <span className="block text-xs font-medium text-gray-500 mb-1">Age(s) — dependents affect filing status and the standard deduction</span>
+                <span className="block text-xs font-medium text-gray-500 mb-1">Age(s): dependents affect filing status and the earned income tax credit</span>
                 <div className="grid grid-cols-3 gap-1.5">
                 {dependentAges.map((age, i) => (
                   <input
@@ -363,8 +390,8 @@ function HouseholdImpactTab() {
               Montana
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              The reform applies to Montana residents, so all households are
-              modeled in Montana.
+              The proposal applies to Montana income tax, so all households
+              are modeled as Montana residents.
             </p>
           </div>
         </div>
@@ -396,10 +423,10 @@ function HouseholdImpactTab() {
 }
 
 /** Statewide impact tab */
-function StatewideImpactTab() {
+function StatewideImpactTab({ year }: { year: ReformYear }) {
   return (
     <div className="space-y-6">
-      <AggregateImpact triggered={true} />
+      <AggregateImpact triggered={true} year={year} />
     </div>
   );
 }

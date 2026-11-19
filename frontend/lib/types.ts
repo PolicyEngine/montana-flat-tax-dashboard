@@ -18,10 +18,16 @@ export interface BenefitAtIncome {
 }
 
 /** Per-provision decomposition, household perspective (positive = gain).
- *  For the Montana flat tax the only provision is the state income-tax
- *  change; the field is retained so the chart tooltip can label it. */
+ *  The three rows sum to the net income change:
+ *  - rate_change: fall in Montana income tax from the lower top rate
+ *  - eitc_change: rise in the Montana earned income tax credit
+ *  - federal_tax_change: fall in federal income tax (negative when a
+ *    smaller Montana tax bill shrinks the federal deduction for state
+ *    and local taxes) */
 export interface ProvisionBreakdown {
-  state_tax_change: number;
+  rate_change: number;
+  eitc_change: number;
+  federal_tax_change: number;
 }
 
 export type ProvisionSeries = { [K in keyof ProvisionBreakdown]: number[] };
@@ -58,6 +64,11 @@ export interface BudgetImpact {
   federal_tax_revenue_impact: number;
   /** Montana state income-tax revenue change (negative = revenue loss). */
   state_tax_revenue_impact: number;
+  /** State revenue change from the rate change alone; null when the
+   *  data file predates the provision split. */
+  rate_cut_state_revenue_impact: number | null;
+  /** State revenue change from the EITC increase alone. */
+  eitc_state_revenue_impact: number | null;
   tax_revenue_impact: number;
   households: number;
 }
@@ -140,49 +151,38 @@ export interface HealthResponse {
 }
 
 /* ──────────────────────────────────────────────────────────────────
- * Validation data (public/data/validation.json)
+ * Validation data (public/data/validation.json, schema_version 4)
  *
- * Reconciles this dashboard's pinned Montana run against the Montana
- * Department of Revenue's own published estimate. The frontend renders
- * a graceful "pending pinned run" state while the file is absent (404)
- * or carries an older schema.
+ * The pinned Montana runs for each tax year, by provision. The external
+ * figures they are compared against (the Governor's budget office
+ * estimates) are constants in lib/montana.ts. The frontend renders a
+ * "pending pinned run" state while the file is absent (404) or carries
+ * an older schema.
  * ────────────────────────────────────────────────────────────────── */
 
-/** The pinned Montana run. net_cost is Montana's own fiscal cost in
- *  nominal USD (negative = revenue loss). *_percent_change values are
- *  percent (already ×100); negative = reduction. */
-export interface ValidationRunSummary {
-  label: string;
+/** One pinned run. Amounts are Montana's own income-tax revenue change
+ *  in nominal USD (negative = revenue loss). *_percent_change values
+ *  are percent (already x100); negative = reduction. */
+export interface ValidationRun {
   year: number;
-  net_cost: number;
+  state_revenue_impact: number;
+  rate_cut_state_revenue_impact: number;
+  eitc_state_revenue_impact: number;
+  /** Current-law Montana income tax in the pinned run. */
+  baseline_state_income_tax?: number;
   poverty_percent_change: number;
   child_poverty_percent_change: number;
-  deep_poverty_percent_change?: number;
-  deep_child_poverty_percent_change?: number;
-  dataset?: string;
-}
-
-/** External anchor band — the Montana Department of Revenue estimate. */
-export interface ExpectedBand {
-  label: string;
-  /** Annual state revenue change, nominal USD (negative = revenue loss). */
-  net_cost: number;
-  source?: string;
 }
 
 export interface ValidationProvenance {
   policyengine_us: string;
   dataset: string;
-  populace_revision?: string;
   reform: Record<string, Record<string, boolean | number>>;
   run_timestamp?: string;
 }
 
 export interface ValidationData {
   schema_version: number;
-  /** This dashboard's pinned Montana run (TY2028). */
-  pinned_run: ValidationRunSummary;
-  /** External anchor: the Montana DOR revenue estimate. */
-  expected_band: ExpectedBand;
+  runs: ValidationRun[];
   provenance: ValidationProvenance;
 }
