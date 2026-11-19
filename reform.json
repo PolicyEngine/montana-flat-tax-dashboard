@@ -1,0 +1,32 @@
+{
+  "gov.states.mt.tax.income.main.single[0].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.single[1].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.joint[0].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.joint[1].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.head_of_household[0].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.head_of_household[1].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.separate[0].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.separate[1].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.surviving_spouse[0].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  },
+  "gov.states.mt.tax.income.main.surviving_spouse[1].rate": {
+    "2028-01-01.2100-12-31": 0.047
+  }
+}
