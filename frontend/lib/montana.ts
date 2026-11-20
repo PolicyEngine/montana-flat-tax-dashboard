@@ -97,9 +97,6 @@ export const REFERENCE_LINKS = {
     'https://github.com/PolicyEngine/policyengine-us/tree/main/policyengine_us/parameters/gov/states/mt/tax/income',
 } as const;
 
-/** Public PolicyEngine API base for live household calculations. */
-export const POLICYENGINE_API_BASE = 'https://api.policyengine.org/us';
-
 export const FILING_STATUSES = [
   'single',
   'joint',

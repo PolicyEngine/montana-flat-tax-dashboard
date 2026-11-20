@@ -80,10 +80,16 @@ change and the EITC increase separately.
   a provision of the proposal. The count also shifts by about 1,100
   households with the order in which variables are calculated, so
   `pipeline.py` keeps a fixed order.
-- The household calculator calls the public PolicyEngine API
-  (`api.policyengine.org`), which runs the current model version rather than
-  the pinned one. The example households are precomputed with the pinned
-  version and do not need the API.
+- The household calculator calls www.policyengine.org's dashboard API
+  through `@policyengine/api-client`, which forwards to the PolicyEngine
+  Public API with PolicyEngine's credential (`api.policyengine.org` refuses
+  unauthenticated browser calls). It runs the current model version rather
+  than the pinned one. The dashboard API answers pages on localhost, on the
+  team's Vercel previews and on hosts listed in policyengine-app-v2's
+  `website/src/lib/dashboardApi/cors.ts`, and allows 30 household
+  calculations a minute per address; each calculator request uses four.
+  The example households are precomputed with the pinned version and do not
+  need the API.
 
 ## Frontend
 
