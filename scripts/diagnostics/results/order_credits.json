@@ -1,0 +1,426 @@
+{
+  "year": 2029,
+  "income_tax_before_refundable_credits": {
+    "taxes_first_vs_net_income_first": [
+      0,
+      0.0
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      0,
+      0.0
+    ]
+  },
+  "income_tax_refundable_credits": {
+    "taxes_first_vs_net_income_first": [
+      99,
+      3349.805419921875
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      99,
+      3349.805419921875
+    ]
+  },
+  "income_tax_non_refundable_credits": {
+    "taxes_first_vs_net_income_first": [
+      99,
+      3349.805419921875
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      99,
+      3349.805419921875
+    ]
+  },
+  "ctc_limiting_tax_liability": {
+    "taxes_first_vs_net_income_first": [
+      4693,
+      63672.09375
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      4693,
+      63672.09375
+    ]
+  },
+  "non_refundable_ctc": {
+    "taxes_first_vs_net_income_first": [
+      99,
+      3349.805419921875
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      99,
+      3349.805419921875
+    ]
+  },
+  "refundable_ctc": {
+    "taxes_first_vs_net_income_first": [
+      99,
+      3349.805419921875
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      99,
+      3349.805419921875
+    ]
+  },
+  "eitc": {
+    "taxes_first_vs_net_income_first": [
+      0,
+      0.0
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      0,
+      0.0
+    ]
+  },
+  "income_tax_before_credits": {
+    "taxes_first_vs_net_income_first": [
+      0,
+      0.0
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      0,
+      0.0
+    ]
+  },
+  "income_tax": {
+    "taxes_first_vs_net_income_first": [
+      99,
+      3349.805419921875
+    ],
+    "taxes_first_vs_alone": [
+      0,
+      0.0
+    ],
+    "net_income_first_vs_alone": [
+      99,
+      3349.805419921875
+    ]
+  },
+  "share_with_ctc_children": 1.0,
+  "examples": [
+    {
+      "tax_unit_index": 488,
+      "ctc_qualifying_children": 2.0,
+      "income_tax_before_refundable_credits": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_refundable_credits": [
+        2572.8828125,
+        1084.1318359375,
+        2572.8828125
+      ],
+      "income_tax_non_refundable_credits": [
+        2227.1171875,
+        3715.8681640625,
+        2227.1171875
+      ],
+      "ctc_limiting_tax_liability": [
+        2227.1171875,
+        3715.8681640625,
+        2227.1171875
+      ],
+      "non_refundable_ctc": [
+        2227.1171875,
+        3715.8681640625,
+        2227.1171875
+      ],
+      "refundable_ctc": [
+        2572.8828125,
+        1084.1318359375,
+        2572.8828125
+      ],
+      "eitc": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_before_credits": [
+        2227.1171875,
+        2227.1171875,
+        2227.1171875
+      ],
+      "income_tax": [
+        -2572.8828125,
+        -1084.1318359375,
+        -2572.8828125
+      ]
+    },
+    {
+      "tax_unit_index": 575,
+      "ctc_qualifying_children": 2.0,
+      "income_tax_before_refundable_credits": [
+        3.0517578125e-05,
+        3.0517578125e-05,
+        3.0517578125e-05
+      ],
+      "income_tax_refundable_credits": [
+        3800.0,
+        18.37109375,
+        3800.0
+      ],
+      "income_tax_non_refundable_credits": [
+        1000.0,
+        4781.62890625,
+        1000.0
+      ],
+      "ctc_limiting_tax_liability": [
+        270.6089172363281,
+        4781.62890625,
+        270.6089172363281
+      ],
+      "non_refundable_ctc": [
+        1000.0,
+        4781.62890625,
+        1000.0
+      ],
+      "refundable_ctc": [
+        3800.0,
+        18.37109375,
+        3800.0
+      ],
+      "eitc": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_before_credits": [
+        270.6089172363281,
+        270.6089172363281,
+        270.6089172363281
+      ],
+      "income_tax": [
+        -3800.0,
+        -18.371063232421875,
+        -3800.0
+      ]
+    },
+    {
+      "tax_unit_index": 608,
+      "ctc_qualifying_children": 3.0,
+      "income_tax_before_refundable_credits": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_refundable_credits": [
+        5863.4462890625,
+        5271.81103515625,
+        5863.4462890625
+      ],
+      "income_tax_non_refundable_credits": [
+        1500.0,
+        2091.63525390625,
+        1500.0
+      ],
+      "ctc_limiting_tax_liability": [
+        0.0,
+        2091.63525390625,
+        0.0
+      ],
+      "non_refundable_ctc": [
+        1500.0,
+        2091.63525390625,
+        1500.0
+      ],
+      "refundable_ctc": [
+        5700.0,
+        5108.36474609375,
+        5700.0
+      ],
+      "eitc": [
+        163.4462890625,
+        163.4462890625,
+        163.4462890625
+      ],
+      "income_tax_before_credits": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax": [
+        -5863.4462890625,
+        -5271.81103515625,
+        -5863.4462890625
+      ]
+    },
+    {
+      "tax_unit_index": 1020,
+      "ctc_qualifying_children": 2.0,
+      "income_tax_before_refundable_credits": [
+        0.0,
+        6.103515625e-05,
+        0.0
+      ],
+      "income_tax_refundable_credits": [
+        3800.0,
+        2578.55322265625,
+        3800.0
+      ],
+      "income_tax_non_refundable_credits": [
+        1000.0,
+        2221.44677734375,
+        1000.0
+      ],
+      "ctc_limiting_tax_liability": [
+        737.3289184570312,
+        2221.44677734375,
+        737.3289184570312
+      ],
+      "non_refundable_ctc": [
+        1000.0,
+        2221.44677734375,
+        1000.0
+      ],
+      "refundable_ctc": [
+        3800.0,
+        2578.55322265625,
+        3800.0
+      ],
+      "eitc": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_before_credits": [
+        737.3289184570312,
+        737.3289184570312,
+        737.3289184570312
+      ],
+      "income_tax": [
+        -3800.0,
+        -2578.55322265625,
+        -3800.0
+      ]
+    },
+    {
+      "tax_unit_index": 1163,
+      "ctc_qualifying_children": 1.0,
+      "income_tax_before_refundable_credits": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_refundable_credits": [
+        681.2427978515625,
+        0.0,
+        681.2427978515625
+      ],
+      "income_tax_non_refundable_credits": [
+        1718.7572021484375,
+        2400.0,
+        1718.7572021484375
+      ],
+      "ctc_limiting_tax_liability": [
+        1718.7572021484375,
+        2671.863525390625,
+        1718.7572021484375
+      ],
+      "non_refundable_ctc": [
+        1718.7572021484375,
+        2400.0,
+        1718.7572021484375
+      ],
+      "refundable_ctc": [
+        681.2427978515625,
+        0.0,
+        681.2427978515625
+      ],
+      "eitc": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_before_credits": [
+        1718.7572021484375,
+        1718.7572021484375,
+        1718.7572021484375
+      ],
+      "income_tax": [
+        -681.2427978515625,
+        0.0,
+        -681.2427978515625
+      ]
+    },
+    {
+      "tax_unit_index": 1587,
+      "ctc_qualifying_children": 2.0,
+      "income_tax_before_refundable_credits": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_refundable_credits": [
+        3399.10546875,
+        1554.367919921875,
+        3399.10546875
+      ],
+      "income_tax_non_refundable_credits": [
+        1400.89453125,
+        3245.632080078125,
+        1400.89453125
+      ],
+      "ctc_limiting_tax_liability": [
+        1400.89453125,
+        3245.632080078125,
+        1400.89453125
+      ],
+      "non_refundable_ctc": [
+        1400.89453125,
+        3245.632080078125,
+        1400.89453125
+      ],
+      "refundable_ctc": [
+        3399.10546875,
+        1554.367919921875,
+        3399.10546875
+      ],
+      "eitc": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "income_tax_before_credits": [
+        1400.89453125,
+        1400.89453125,
+        1400.89453125
+      ],
+      "income_tax": [
+        -3399.10546875,
+        -1554.367919921875,
+        -3399.10546875
+      ]
+    }
+  ]
+}
