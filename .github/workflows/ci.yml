@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  reform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: reform.json is valid and matches the published data
+        run: |
+          python3 - <<'PY'
+          import json
+          reform = json.load(open("reform.json"))
+          published = json.load(open("frontend/public/data/validation.json"))
+          assert published["schema_version"] == 4, published["schema_version"]
+          assert published["provenance"]["reform"] == reform, (
+              "frontend/public/data was generated from a different reform.json; "
+              "rerun `make data`"
+          )
+          print("reform.json matches the reform recorded in validation.json")
+          PY

@@ -18,7 +18,7 @@ const OG_IMAGE = 'https://policyengine.org/assets/logos/policyengine/og-logo.png
 
 const TITLE = 'Montana flat income tax dashboard | PolicyEngine';
 const DESCRIPTION =
-  "Estimate the household and statewide impact of Montana's proposed flat 4.7% individual income tax, beginning tax year 2028.";
+  "Estimate the household and statewide impact of Montana Gov. Gianforte's proposed flat 4.7% income tax rate and earned income tax credit increase.";
 
 export const metadata: Metadata = {
   title: {
@@ -77,7 +77,8 @@ export const metadata: Metadata = {
     'Montana flat tax',
     'Montana income tax',
     'flat income tax',
-    'Montana Department of Revenue',
+    'Montana earned income tax credit',
+    'Montana EITC',
     'Gianforte',
     'HB 337',
     'state income tax',

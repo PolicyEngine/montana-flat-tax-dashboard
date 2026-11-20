@@ -1,7 +1,7 @@
 /**
  * Content-rule regression tests carried over from the dashboard
- * template (plan.yaml constraints), applied to the Montana flat-tax
- * dashboard:
+ * template (plan.yaml constraints), applied to the Montana flat income
+ * tax and EITC dashboard:
  * - no-race-breakdowns: no tab renders a race breakdown section
  * - neutral-tone: no characterizing adjectives
  * - tab navigation: the five tabs render in the specified order
@@ -83,13 +83,14 @@ describe('Tab navigation', () => {
 });
 
 describe('Figures come from data files, not JSX', () => {
-  it('policy overview only shows statute constants (allowed), never model output', () => {
-    // The provision tables contain statutory rates and thresholds,
-    // which are allowed. Model-output figures (the state revenue cost,
-    // poverty changes) must not appear in the policy overview.
+  it('policy overview shows statute constants, never model output', () => {
+    // Statutory and proposed rates and thresholds are allowed.
+    // Model-output figures, which the data files format as "-$152.3M",
+    // must not appear in the policy overview. Revenue estimates,
+    // including the budget office's, live on the Validation tab.
     const { container } = renderWithClient(<PolicyOverview />);
     expect(container.textContent ?? '').not.toMatch(
-      /118\.2|-\$118|\$\d+(\.\d+)?[BTM]\b/
+      /[+-]\$\d+(\.\d+)?[BTM]\b|\$\d+\.\d+[BTM]\b/
     );
   });
 });
