@@ -3,25 +3,25 @@
   "runs": [
     {
       "year": 2028,
-      "state_revenue_impact": -89234933.1749211,
-      "rate_cut_state_revenue_impact": -72843135.46079093,
-      "eitc_state_revenue_impact": -16391797.714130163,
-      "baseline_state_income_tax": 2120469067.1897805,
-      "poverty_percent_change": -1.594760206959816,
-      "child_poverty_percent_change": -3.298287343983957
+      "state_revenue_impact": -92540927.13614167,
+      "rate_cut_state_revenue_impact": -75724398.60536999,
+      "eitc_state_revenue_impact": -16816528.530771695,
+      "baseline_state_income_tax": 2156697220.791525,
+      "poverty_percent_change": -1.7344681889917761,
+      "child_poverty_percent_change": -4.593727791747357
     },
     {
       "year": 2029,
-      "state_revenue_impact": -152272423.691076,
-      "rate_cut_state_revenue_impact": -135850085.6983226,
-      "eitc_state_revenue_impact": -16422337.992753431,
-      "baseline_state_income_tax": 2229673163.114175,
-      "poverty_percent_change": -0.7386886010643693,
-      "child_poverty_percent_change": -1.9644452820838594
+      "state_revenue_impact": -157463961.12489784,
+      "rate_cut_state_revenue_impact": -140550605.58279675,
+      "eitc_state_revenue_impact": -16913355.542101074,
+      "baseline_state_income_tax": 2279757791.5950217,
+      "poverty_percent_change": -1.2127546622453647,
+      "child_poverty_percent_change": -3.0540554138872844
     }
   ],
   "provenance": {
-    "policyengine_us": "1.715.2",
+    "policyengine_us": "2.153.8",
     "dataset": "hf://policyengine/policyengine-us-data/states/MT.h5",
     "reform": {
       "gov.states.mt.tax.income.main.single[1].rate": {
@@ -48,6 +48,6 @@
         "2028-01-01.2100-12-31": 0.3
       }
     },
-    "run_timestamp": "2026-11-19T17:14:04.112976+00:00"
+    "run_timestamp": "2026-11-24T20:32:21.362040+00:00"
   }
 }

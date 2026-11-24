@@ -431,7 +431,7 @@ export default function AggregateImpact({ triggered, year = DEFAULT_YEAR }: Prop
                   ))}
                 </div>
                 <p className="text-xs text-gray-500 mt-3 italic">
-                  The cards above count households whose net income changes by more than $1. The chart counts residents by how much their household&apos;s net income changes as a share of income; changes under 0.1% show as no change. Households that show a loss all itemize federal deductions. The model estimates their federal deduction for state and local taxes from an approximation of Montana tax withheld, which applies the single-filer schedule to each person&apos;s income. For some households that approximation falls under the proposal while their computed Montana tax does not, so their modeled federal tax rises. This is a limit of the model, not a provision of the proposal.
+                  The cards above count households whose net income changes by more than $1. The chart counts residents by how much their household&apos;s net income changes as a share of income; changes under 0.1% show as no change. Households that show a loss all itemize federal deductions. The model bases their federal deduction for state and local taxes on an estimate of Montana income tax that subtracts the standard deduction instead of their itemized deductions, so the estimate exceeds their computed Montana tax and puts more of their income in the top bracket. Under the proposal the estimate falls while their computed Montana tax barely changes, so their modeled federal tax rises. This is a limit of the model, not a provision of the proposal.
                 </p>
               </div>
             </div>

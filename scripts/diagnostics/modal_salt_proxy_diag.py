@@ -3,7 +3,7 @@
 From the repository root:
     modal run --detach scripts/diagnostics/modal_salt_proxy_diag.py
     modal run --detach scripts/diagnostics/modal_salt_proxy_diag.py --what order_credits
-    modal volume get mt-flat-tax-losers salt_proxy_diag.json .
+    modal volume get mt-flat-tax-losers salt_proxy_diag_<policyengine-us version>.json .
 """
 
 import pathlib
@@ -32,6 +32,7 @@ vol = modal.Volume.from_name("mt-flat-tax-losers", create_if_missing=True)
 def run_diag():
     import sys
 
+    sys.path.insert(0, "/repo/scripts")
     sys.path.insert(0, "/repo/scripts/diagnostics")
     import salt_proxy_diag
 
@@ -39,7 +40,10 @@ def run_diag():
         print(msg, flush=True)
         vol.commit()
 
-    salt_proxy_diag.main("/out/salt_proxy_diag.json", log=log)
+    import importlib.metadata as md
+
+    out = f"/out/salt_proxy_diag_{md.version('policyengine-us')}.json"
+    salt_proxy_diag.main(out, log=log)
     vol.commit()
 
 

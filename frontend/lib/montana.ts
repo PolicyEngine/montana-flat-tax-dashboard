@@ -51,8 +51,8 @@ export const THRESHOLDS: Record<
   ReformYear,
   { single: number; joint: number; head_of_household: number }
 > = {
-  2028: { single: 66_400, joint: 132_700, head_of_household: 99_500 },
-  2029: { single: 67_800, joint: 135_600, head_of_household: 101_700 },
+  2028: { single: 66_500, joint: 133_000, head_of_household: 99_800 },
+  2029: { single: 67_900, joint: 135_800, head_of_household: 101_900 },
 };
 
 /** One-line description of what applies in each tax year. */

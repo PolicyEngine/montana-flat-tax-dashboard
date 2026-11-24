@@ -2,22 +2,27 @@
 
 The federal SALT deduction in policyengine-us does not read a household's
 computed Montana tax. It reads state_withheld_income_tax, which for Montana
-is mt_withheld_income_tax: the single-filer rate schedule applied to each
-person's AGI less the single standard deduction cap. This script measures,
-on MT.h5 with the repository's pinned model:
+is mt_withheld_income_tax, an estimate that avoids a circular calculation.
+Before policyengine-us 2.153.4 the estimate applied the single-filer rate
+schedule to each person's AGI less the single standard deduction cap. From
+2.153.4 (PE-US #11197) it applies the tax unit's filing-status schedule and
+capital gains rates to its AGI less the federal basic standard deduction.
+This script measures, on MT.h5 with the repository's pinned model:
 
-1. who loses, and how the withholding proxy's change compares with the
-   change in the Montana tax the model actually computes;
+1. who loses, and how the estimate's change compares with the change in
+   the Montana tax the model actually computes;
 2. a corrected reform run in which the SALT input moves with each tax
    unit's actual change in Montana tax before refundable credits (the
    baseline is untouched);
-3. whether the loser count depends on the order variables are calculated.
+3. optionally, whether the loser count depends on the order variables are
+   calculated (it did on policyengine-us 1.715.2; PE-US #9741 fixed it).
 
 Usage (from the repository root, with scripts/ importable):
     python scripts/diagnostics/salt_proxy_diag.py OUT.json
 It is normally run on Modal through modal_salt_proxy_diag.py.
 """
 
+import functools
 import gc
 import json
 import os
@@ -29,7 +34,13 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from policyengine_us import Microsimulation  # noqa: E402
-from reform_def import MT_DATASET, REFORM_DICT, YEARS, make_reform  # noqa: E402
+from reform_def import (  # noqa: E402
+    MT_DATASET,
+    REFORM_DICT,
+    YEARS,
+    load_dataset,
+    make_reform,
+)
 
 TU_VARS = [
     "tax_unit_weight",
@@ -43,6 +54,11 @@ TU_VARS = [
     "adjusted_gross_income",
     "mt_files_separately",
 ]
+
+
+@functools.cache
+def dataset():
+    return load_dataset(MT_DATASET)
 
 
 def values(sim, var, year, map_to=None):
@@ -83,8 +99,8 @@ def tax_unit_structure(sim, year):
 def diagnose_year(year):
     t0 = time.time()
     print(f"=== {year} ===", flush=True)
-    base = Microsimulation(dataset=MT_DATASET)
-    ref = Microsimulation(dataset=MT_DATASET, reform=make_reform(REFORM_DICT))
+    base = Microsimulation(dataset=dataset())
+    ref = Microsimulation(dataset=dataset(), reform=make_reform(REFORM_DICT))
 
     # Same order as pipeline.py: state tax, federal tax, then net income.
     w_hh = values(base, "household_weight", year, map_to="household")
@@ -115,8 +131,6 @@ def diagnose_year(year):
     p = base.tax_benefit_system.parameters(f"{year}-01-01").gov.states.mt.tax.income
     single_top = float(p.main.single.thresholds[1])
     joint_top = float(p.main.joint.thresholds[1])
-    std_cap = float(p.deductions.standard.cap["SINGLE"])
-    proxy_hits_top = (max_agi - std_cap) > single_top
     actual_rate_unchanged = np.abs(d_mt_brc) < 1
 
     lose = tu_chg < -1
@@ -130,7 +144,6 @@ def diagnose_year(year):
         "thresholds": {
             "single_top_rate_starts": single_top,
             "joint_top_rate_starts": joint_top,
-            "proxy_standard_deduction": std_cap,
         },
         "households": {
             "total": float(w_hh.sum()),
@@ -153,8 +166,18 @@ def diagnose_year(year):
             "share_actual_mt_tax_before_refundable_unchanged": wavg(
                 actual_rate_unchanged[lose], lw
             ),
-            "share_proxy_puts_largest_earner_in_top_bracket": wavg(
-                proxy_hits_top[lose], lw
+            "mean_baseline_estimate": wavg(
+                tu["state_withheld_income_tax"][0][lose], lw
+            ),
+            "mean_baseline_actual_mt_tax_before_refundable": wavg(
+                tu["mt_income_tax_before_refundable_credits_unit"][0][lose], lw
+            ),
+            "share_estimate_above_actual": wavg(
+                (
+                    tu["state_withheld_income_tax"][0]
+                    > tu["mt_income_tax_before_refundable_credits_unit"][0] + 1
+                )[lose],
+                lw,
             ),
             "mean_change_proxy": wavg(d_proxy[lose], lw),
             "mean_change_salt_deduction": wavg(d_salt[lose], lw),
@@ -180,7 +203,7 @@ def diagnose_year(year):
 
     # Corrected reform run: SALT input = baseline proxy + actual change in
     # Montana tax before refundable credits. Baseline untouched.
-    fix = Microsimulation(dataset=MT_DATASET, reform=make_reform(REFORM_DICT))
+    fix = Microsimulation(dataset=dataset(), reform=make_reform(REFORM_DICT))
     fix.set_input(
         "state_withheld_income_tax", year, tu["state_withheld_income_tax"][0] + d_mt_brc
     )
@@ -246,8 +269,8 @@ def order_test(year):
     runs = {}
     for name, order in orders.items():
         sims = {
-            "base": Microsimulation(dataset=MT_DATASET),
-            "reform": Microsimulation(dataset=MT_DATASET, reform=make_reform(REFORM_DICT)),
+            "base": Microsimulation(dataset=dataset()),
+            "reform": Microsimulation(dataset=dataset(), reform=make_reform(REFORM_DICT)),
         }
         res = {}
         for which, sim in sims.items():
@@ -313,17 +336,24 @@ def order_test(year):
     return out
 
 
-def main(out_path, log=print):
-    result = {"years": [], "order_test": None}
+def main(out_path, log=print, order=False):
+    import importlib.metadata as md
+
+    result = {
+        "policyengine_us": md.version("policyengine-us"),
+        "years": [],
+        "order_test": None,
+    }
     for y in YEARS:
         result["years"].append(diagnose_year(y))
         with open(out_path, "w") as f:
             json.dump(result, f, indent=2)
         log(f"wrote {y}")
-    result["order_test"] = order_test(2029)
-    with open(out_path, "w") as f:
-        json.dump(result, f, indent=2)
-    log("wrote order test")
+    if order:
+        result["order_test"] = order_test(2029)
+        with open(out_path, "w") as f:
+            json.dump(result, f, indent=2)
+        log("wrote order test")
     return result
 
 
@@ -357,7 +387,7 @@ def order_credits(year):
     }
     vals = {}
     for name, order in orders.items():
-        sim = Microsimulation(dataset=MT_DATASET)
+        sim = Microsimulation(dataset=dataset())
         for v in order:
             sim.calculate(v, period=year)
         vals[name] = {v: values(sim, v, year).astype(float) for v in CREDIT_VARS}
