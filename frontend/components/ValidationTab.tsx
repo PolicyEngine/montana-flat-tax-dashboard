@@ -186,8 +186,10 @@ export default function ValidationTab() {
         </summary>
         <div className="mt-3 space-y-3 text-sm text-gray-700 max-w-prose">
           <p>
-            Static analysis with no behavioral responses, Montana only, on a
-            dataset calibrated to Montana. Each provision is also run on its
+            Static analysis with no behavioral responses, Montana only, on
+            the Montana households in PolicyEngine&apos;s Populace dataset,
+            which is calibrated to state and congressional district targets.
+            Each provision is also run on its
             own against current law. Poverty uses the Supplemental Poverty
             Measure (SPM).
           </p>

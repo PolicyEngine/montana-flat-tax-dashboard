@@ -12,7 +12,6 @@ from policyengine_us import Microsimulation
 
 from reform_def import (
     DATA_DIR,
-    DISTRICT_DATASET,
     DISTRICTS,
     REFORM_DICT,
     YEARS,
@@ -24,9 +23,8 @@ OUT = os.path.join(DATA_DIR, "congressional_districts.csv")
 
 
 def run(district, year):
-    path = load_dataset(DISTRICT_DATASET.format(district=district))
-    base = Microsimulation(dataset=path)
-    ref = Microsimulation(dataset=path, reform=make_reform(REFORM_DICT))
+    base = Microsimulation(dataset=load_dataset(district))
+    ref = Microsimulation(dataset=load_dataset(district), reform=make_reform(REFORM_DICT))
 
     w = np.array(base.calculate("household_weight", period=year))
     nb = np.array(base.calculate("household_net_income", period=year, map_to="household"))

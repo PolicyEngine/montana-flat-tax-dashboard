@@ -3,10 +3,11 @@
 From the repository root:
     modal run --detach scripts/diagnostics/modal_salt_proxy_diag.py
     modal run --detach scripts/diagnostics/modal_salt_proxy_diag.py --what order_credits
-    modal volume get mt-flat-tax-losers salt_proxy_diag_<policyengine-us version>.json .
+    modal volume get mt-flat-tax-losers salt_proxy_diag_<policyengine-us version>_populace.json .
 """
 
 import pathlib
+import sys
 
 import modal
 
@@ -18,17 +19,22 @@ ROOT = (
     else pathlib.Path("/repo")
 )
 
+sys.path.insert(0, str(ROOT / "scripts"))
+from dataset_config import POPULACE_TAG  # noqa: E402
+
 image = (
     modal.Image.debian_slim(python_version="3.13")
     .pip_install_from_requirements(str(ROOT / "requirements.lock.txt"))
+    .env({"MT_DATASET_DIR": f"/data/populace/{POPULACE_TAG}"})
     .add_local_dir(str(ROOT / "scripts"), "/repo/scripts")
     .add_local_file(str(ROOT / "reform.json"), "/repo/reform.json")
 )
 app = modal.App("mt-flat-tax-salt-proxy-diag")
 vol = modal.Volume.from_name("mt-flat-tax-losers", create_if_missing=True)
+data = modal.Volume.from_name("mt-flat-tax-data")
 
 
-@app.function(image=image, volumes={"/out": vol}, cpu=4, memory=16384, timeout=3600)
+@app.function(image=image, volumes={"/out": vol, "/data": data}, cpu=4, memory=16384, timeout=3600)
 def run_diag():
     import sys
 
@@ -42,12 +48,12 @@ def run_diag():
 
     import importlib.metadata as md
 
-    out = f"/out/salt_proxy_diag_{md.version('policyengine-us')}.json"
+    out = f"/out/salt_proxy_diag_{md.version('policyengine-us')}_populace.json"
     salt_proxy_diag.main(out, log=log)
     vol.commit()
 
 
-@app.function(image=image, volumes={"/out": vol}, cpu=4, memory=16384, timeout=3600)
+@app.function(image=image, volumes={"/out": vol, "/data": data}, cpu=4, memory=16384, timeout=3600)
 def run_order_credits():
     import json
     import sys

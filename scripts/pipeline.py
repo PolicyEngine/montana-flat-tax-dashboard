@@ -25,8 +25,8 @@ from policyengine_us import Microsimulation
 
 from reform_def import (
     DATA_DIR,
+    DATASET_SOURCE,
     EITC_REFORM_DICT,
-    MT_DATASET,
     RATE_REFORM_DICT,
     REFORM_DICT,
     YEARS,
@@ -35,9 +35,6 @@ from reform_def import (
 )
 
 os.makedirs(DATA_DIR, exist_ok=True)
-
-# Local copy with current column names (see reform_def.load_dataset).
-DATASET = load_dataset(MT_DATASET)
 
 _INTRA_BOUNDS = [-np.inf, -0.05, -1e-3, 1e-3, 0.05, np.inf]
 _INTRA_LABELS = ["lose_more_5pct", "lose_less_5pct", "no_change",
@@ -61,8 +58,8 @@ def person(sim, var, year):
 def run_year(year):
     """Return (metrics dict, decile rows, winners/losers rows, bracket rows)."""
     print(f"=== {year} ===", flush=True)
-    base = Microsimulation(dataset=DATASET)
-    ref = Microsimulation(dataset=DATASET, reform=make_reform(REFORM_DICT))
+    base = Microsimulation(dataset=load_dataset())
+    ref = Microsimulation(dataset=load_dataset(), reform=make_reform(REFORM_DICT))
 
     w = hh(base, "household_weight", year)
     total_hh = float(w.sum())
@@ -75,11 +72,11 @@ def run_year(year):
     fed_rev = float(((fed_r - fed_b) * w).sum())
 
     # Provision split: each provision alone against current law.
-    rate_sim = Microsimulation(dataset=DATASET, reform=make_reform(RATE_REFORM_DICT))
+    rate_sim = Microsimulation(dataset=load_dataset(), reform=make_reform(RATE_REFORM_DICT))
     rate_rev = float(((hh(rate_sim, "mt_income_tax", year) - mt_b) * w).sum())
     del rate_sim
     gc.collect()
-    eitc_sim = Microsimulation(dataset=DATASET, reform=make_reform(EITC_REFORM_DICT))
+    eitc_sim = Microsimulation(dataset=load_dataset(), reform=make_reform(EITC_REFORM_DICT))
     eitc_rev = float(((hh(eitc_sim, "mt_income_tax", year) - mt_b) * w).sum())
     del eitc_sim
     gc.collect()
@@ -241,7 +238,7 @@ validation = {
     "runs": runs,
     "provenance": {
         "policyengine_us": _md.version("policyengine-us"),
-        "dataset": MT_DATASET,
+        "dataset": DATASET_SOURCE,
         "reform": REFORM_DICT,
         "run_timestamp": datetime.now(timezone.utc).isoformat(),
     },

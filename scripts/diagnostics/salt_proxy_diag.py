@@ -7,7 +7,7 @@ Before policyengine-us 2.153.4 the estimate applied the single-filer rate
 schedule to each person's AGI less the single standard deduction cap. From
 2.153.4 (PE-US #11197) it applies the tax unit's filing-status schedule and
 capital gains rates to its AGI less the federal basic standard deduction.
-This script measures, on MT.h5 with the repository's pinned model:
+This script measures, on the repository's Montana dataset and pinned model:
 
 1. who loses, and how the estimate's change compares with the change in
    the Montana tax the model actually computes;
@@ -22,7 +22,6 @@ Usage (from the repository root, with scripts/ importable):
 It is normally run on Modal through modal_salt_proxy_diag.py.
 """
 
-import functools
 import gc
 import json
 import os
@@ -35,7 +34,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 
 from policyengine_us import Microsimulation  # noqa: E402
 from reform_def import (  # noqa: E402
-    MT_DATASET,
     REFORM_DICT,
     YEARS,
     load_dataset,
@@ -56,9 +54,8 @@ TU_VARS = [
 ]
 
 
-@functools.cache
 def dataset():
-    return load_dataset(MT_DATASET)
+    return load_dataset()
 
 
 def values(sim, var, year, map_to=None):

@@ -216,11 +216,9 @@ export default function CongressionalDistrictImpact({ year = DEFAULT_YEAR }: Pro
       {/* Methodology note */}
       <p className="text-xs text-gray-500">
         Winners are households whose net income rises, matching the statewide
-        tab. District estimates use PolicyEngine&apos;s district-calibrated
-        datasets, from the same state-calibrated family as the statewide
-        estimate. District figures may not exactly aggregate to
-        the statewide figure because each district file is calibrated
-        independently. Representatives are those elected in November 2026
+        tab. District estimates use the Montana households in each district
+        from the same Populace dataset as the statewide estimate, so the two
+        districts add up to the statewide figure. Representatives are those elected in November 2026
         to the 120th Congress, which convenes in January 2027.
       </p>
     </div>

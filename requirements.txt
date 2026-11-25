@@ -1,10 +1,9 @@
 # Python environment for the data pipelines in scripts/.
 #
-# The Montana datasets (policyengine-us-data states/MT.h5 and
-# districts/MT-0*.h5) were built on May 20, 2026 against policyengine-us
-# 1.700.x. policyengine-us has since renamed or removed three of their
-# columns; scripts/reform_def.py:load_dataset() maps them to current names.
-# scripts/diagnostics/pin_check.py compares baseline totals across pins.
+# The pipelines read Montana slices of the Populace ACS local-area release
+# (scripts/build_dataset.py, which runs on Modal under the release's own
+# policyengine-us 2.2.1). scripts/diagnostics/pin_check.py compares
+# baseline totals across pins and datasets.
 #
 # requirements.lock.txt holds the full resolved environment.
 policyengine-us==2.153.8

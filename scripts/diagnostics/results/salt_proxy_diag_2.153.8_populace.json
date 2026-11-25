@@ -1,0 +1,112 @@
+{
+  "policyengine_us": "2.153.8",
+  "years": [
+    {
+      "year": 2028,
+      "thresholds": {
+        "single_top_rate_starts": 66500.0,
+        "joint_top_rate_starts": 133000.0
+      },
+      "households": {
+        "total": 425965.65625,
+        "losers_over_1": 2649.762451171875,
+        "winners_over_1": 168090.59375,
+        "state_revenue_change": -82308966.32470937,
+        "federal_revenue_change": 2890785.528188923
+      },
+      "losing_tax_units": {
+        "count": 2743.03125,
+        "share_itemizing": 1.0,
+        "share_by_filing_status": {
+          "HEAD_OF_HOUSEHOLD": 0.0003024508769158274,
+          "JOINT": 0.6995717287063599,
+          "SINGLE": 0.30012577772140503
+        },
+        "share_joint_with_one_earner": 0.9792517423629761,
+        "share_actual_mt_tax_before_refundable_unchanged": 0.9506285551229705,
+        "mean_baseline_estimate": 6056.1328125,
+        "mean_baseline_actual_mt_tax_before_refundable": 4887.93310546875,
+        "share_estimate_above_actual": 1.0,
+        "mean_change_proxy": -53.67219924926758,
+        "mean_change_salt_deduction": -53.67222595214844,
+        "mean_change_actual_mt_tax_before_refundable": -1.1455212831497192,
+        "mean_change_federal_tax": 11.195292472839355,
+        "mean_loss": -10.04977035522461,
+        "largest_loss": -169.931640625,
+        "mean_agi": 155725.1875,
+        "mean_baseline_federal_taxable_income": 103815.6015625
+      },
+      "all_itemizers": {
+        "count": 45506.83984375,
+        "sum_change_proxy": -30918128.0,
+        "sum_change_salt_deduction": -10390546.0,
+        "sum_change_actual_mt_tax_before_refundable": -28601318.0,
+        "sum_change_federal_tax": 2890785.25
+      },
+      "corrected": {
+        "max_abs_mt_tax_difference_vs_stock_reform": 54.70745849609375,
+        "state_revenue_change": -82307730.18667269,
+        "federal_revenue_change": 2711550.1886808407,
+        "losers_over_1": 0.0,
+        "winners_over_1": 168430.453125,
+        "largest_loss": 0.0,
+        "mean_gain_among_winners": 472.57354736328125,
+        "remaining_losers_sample": []
+      }
+    },
+    {
+      "year": 2029,
+      "thresholds": {
+        "single_top_rate_starts": 67900.0,
+        "joint_top_rate_starts": 135800.0
+      },
+      "households": {
+        "total": 427612.3125,
+        "losers_over_1": 2670.683349609375,
+        "winners_over_1": 171373.625,
+        "state_revenue_change": -138853047.41938138,
+        "federal_revenue_change": 5212834.831902637
+      },
+      "losing_tax_units": {
+        "count": 2764.3125,
+        "share_itemizing": 1.0,
+        "share_by_filing_status": {
+          "HEAD_OF_HOUSEHOLD": 0.0003012826491612941,
+          "JOINT": 0.6762620210647583,
+          "SINGLE": 0.3234368860721588
+        },
+        "share_joint_with_one_earner": 0.9748315811157227,
+        "share_actual_mt_tax_before_refundable_unchanged": 0.97480327534309,
+        "mean_baseline_estimate": 6060.59716796875,
+        "mean_baseline_actual_mt_tax_before_refundable": 5095.10595703125,
+        "share_estimate_above_actual": 1.0,
+        "mean_change_proxy": -89.83146667480469,
+        "mean_change_salt_deduction": -89.83137512207031,
+        "mean_change_actual_mt_tax_before_refundable": -0.5671474933624268,
+        "mean_change_federal_tax": 18.70408821105957,
+        "mean_loss": -18.136940002441406,
+        "largest_loss": -297.9453125,
+        "mean_agi": 156094.5625,
+        "mean_baseline_federal_taxable_income": 108132.1875
+      },
+      "all_itemizers": {
+        "count": 46265.53125,
+        "sum_change_proxy": -56516116.0,
+        "sum_change_salt_deduction": -19181328.0,
+        "sum_change_actual_mt_tax_before_refundable": -52626920.0,
+        "sum_change_federal_tax": 5212835.0
+      },
+      "corrected": {
+        "max_abs_mt_tax_difference_vs_stock_reform": 101.88543701171875,
+        "state_revenue_change": -138850779.95132324,
+        "federal_revenue_change": 5001005.527037749,
+        "losers_over_1": 0.0,
+        "winners_over_1": 171384.90625,
+        "largest_loss": 0.0,
+        "mean_gain_among_winners": 780.9879150390625,
+        "remaining_losers_sample": []
+      }
+    }
+  ],
+  "order_test": null
+}

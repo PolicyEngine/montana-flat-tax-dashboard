@@ -520,7 +520,7 @@ export default function AggregateImpact({ triggered, year = DEFAULT_YEAR }: Prop
               <ChartWatermark />
             </div>
             <p className="text-xs text-gray-500 italic max-w-prose">
-              Poverty uses the Supplemental Poverty Measure (SPM). Deep poverty means resources below half the poverty threshold. The chart shows the percent change in each rate; a negative value means the rate falls. The change comes from the EITC increase, a refundable credit that raises after-tax income for households with earnings; the rate cut applies to taxable income above the bracket thresholds. The dataset is calibrated mainly to tax and demographic targets, so its poverty rates can differ from Census Bureau estimates, and the change rests on a small number of sampled Montana households near the poverty threshold.
+              Poverty uses the Supplemental Poverty Measure (SPM). Deep poverty means resources below half the poverty threshold. The chart shows the percent change in each rate; a negative value means the rate falls. The change comes from the EITC increase, a refundable credit that raises after-tax income for households with earnings; the rate cut applies to taxable income above the bracket thresholds. The dataset&apos;s current-law SPM poverty rate for Montana, about 6% in 2029, is below the Census Bureau&apos;s three-year average of 9.5% for 2023 to 2025, and the change rests on a small number of sampled Montana households near the poverty threshold.
             </p>
           </div>
         );

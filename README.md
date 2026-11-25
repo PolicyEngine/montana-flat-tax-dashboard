@@ -31,6 +31,8 @@ requirements.txt             pinned Python environment for the pipelines
 requirements.lock.txt        full resolved environment
 scripts/
   reform_def.py              loads reform.json; shared years; dataset loading
+  dataset_config.py          Populace release and Montana geography
+  build_dataset.py           slices Montana and its districts from Populace
   pipeline.py                statewide results by tax year and provision
   district_pipeline.py       MT-01 and MT-02 results
   compute_example_households.py   precomputed example households
@@ -44,6 +46,7 @@ frontend/                    Next.js app (deployed to Vercel)
 
 ```
 make install   # creates .venv from requirements.txt and installs the frontend
+make dataset   # downloads the Montana slices (needs Modal access)
 make data      # runs the three pipelines; rewrites frontend/public/data/
 ```
 
@@ -61,60 +64,60 @@ change and the EITC increase separately.
 
 ### Data and model version
 
-- Dataset: `hf://policyengine/policyengine-us-data/states/MT.h5` and
-  `districts/MT-01.h5`, `districts/MT-02.h5`. These are calibrated to Montana.
-  They were built on May 20, 2026 and that data repository has not changed
-  since May 31, 2026.
-- `scripts/reform_def.py:load_dataset()` downloads each file and changes it
-  so current policyengine-us reads it as intended:
-  - `partnership_se_income` becomes `partnership_self_employment_net_earnings`
-    (renamed in policyengine-us #8614).
-  - `partnership_s_corp_income` becomes `partnership_income`. Since #8614 the
-    combined variable is the sum of `partnership_income` and `s_corp_income`,
-    and the combined column no longer carries into later years. Without the
-    change the model counts no partnership or S corporation income in 2028
-    and 2029, and Montana income tax falls 15%.
-  - `first_home_mortgage_interest` and `second_home_mortgage_interest` are
-    dropped (removed in #9605). `home_mortgage_interest` holds the same
-    amounts.
-  - `county_fips` is stored as five-digit text, and 10 records (a 15- or
-    16-year-old in an SPM unit of their own) are flagged as independent.
-    Current policyengine-us computes no SPM threshold until both hold.
+- Dataset: the Populace ACS local-area release, build
+  `populace-us-2024-buildo-acs-local-766b7c7-20261017T030317Z`
+  (`policyengine/populace-us`, `populace_us_2024_acs_local.h5`; the current
+  local-area build as of November 2026). The national file holds 1.59
+  million households calibrated to 4,765 administrative targets, including
+  IRS Statistics of Income tables by state and population by congressional
+  district. `scripts/build_dataset.py` keeps the 6,039 Montana households
+  (`state_fips` 30) and splits them by `congressional_district_geoid`
+  (2,830 in MT-01, 3,209 in MT-02) with the release's weights unchanged. It
+  also sets missing `parent_1_id` and `parent_2_id` values on the ASEC/PUF
+  records to 0, which policyengine-us reads as unknown and which the ACS
+  records already carry; current policyengine-us refuses missing inputs.
+  The slices are on the `mt-flat-tax-data` Modal volume; `make dataset`
+  copies them to `.cache/datasets/`.
+- Effective sample size: the Kish effective sample size of the Montana
+  household weights is 315 (164 in MT-01, 151 in MT-02). The
+  policyengine-us-data file used before November 2026 (`states/MT.h5`) had
+  2,782. Results that rest on a small group of households, such as top-rate
+  filers or households near the poverty line, carry more sampling noise.
 - Model: `policyengine-us==2.153.8`. It includes the filing-status estimate
   of Montana tax for the federal SALT deduction (#11197) and the fix that
   makes results independent of calculation order (#9741).
 - `scripts/diagnostics/pin_check.py` sums every dataset column and the main
-  derived totals under a given pin; results are in
-  `scripts/diagnostics/results/pin_check_*.json`. Against 1.715.2, for tax
-  year 2029: most income inputs are about 3% lower (newer economic
-  projections); federal AGI is 8.6% higher, mainly because 2.153.8 limits
-  business losses under section 461(l), which mostly makes negative AGIs
-  less negative; federal taxable income is 0.9% higher and Montana taxable
-  income 0.1% higher; Montana income tax after refundable credits is 2.2%
-  higher ($2.28B against $2.23B). Rerun the check before changing the pin.
+  derived totals for a dataset and pin; results are in
+  `scripts/diagnostics/results/pin_check_*.json`, including runs on the old
+  `states/MT.h5` (`scripts/diagnostics/legacy_dataset.py` maps its
+  outdated columns). For tax year 2029 under 2.153.8, Populace gives
+  current-law Montana income tax of $2.47B against $2.28B on the old file;
+  the budget office forecasts $2.55B for fiscal year 2029. Rerun the check
+  before changing the dataset or the pin.
 - Each tax year uses fresh `Microsimulation` objects. Computing two years on
   one simulation object returns $0 Montana tax for the second year.
 
 ### Known limits
 
 - Estimates are static: no behavioral responses.
-- The dataset is calibrated mainly to tax and demographic targets. Its poverty
-  rates can differ from Census Bureau estimates, and poverty changes rest on a
-  small number of sampled households.
-- About 1.2% of households show a loss (about 5,700 in tax year 2029,
-  averaging $44 per losing tax unit and at most $577). All of them itemize
+- The dataset is calibrated mainly to tax, program and population targets.
+  Its current-law SPM poverty rate for Montana is about 6.0% in 2029; the
+  Census Bureau's three-year average for 2023 to 2025 is 9.5% (±1.6). Poverty
+  changes rest on a small number of sampled households.
+- About 0.6% of households show a loss (about 2,700 in tax year 2029,
+  averaging $18 per losing tax unit and at most $298). All of them itemize
   federal deductions. The model's federal deduction for state and local
   taxes reads `mt_withheld_income_tax`, an estimate of Montana income tax
   that avoids a circular calculation, not the household's computed Montana
   tax. The estimate uses the tax unit's filing-status brackets but
   subtracts the standard deduction rather than itemized deductions, so for
-  these households it exceeds their computed Montana tax ($7,700 against
-  $3,100 on average in 2029). Under the proposal the estimate falls about
-  $310 on average while their computed Montana tax barely changes, so their
+  these households it exceeds their computed Montana tax ($6,100 against
+  $5,100 on average in 2029). Under the proposal the estimate falls about
+  $90 on average while their computed Montana tax barely changes, so their
   modeled federal tax rises. This is a limit of the model, not a provision
   of the proposal. Moving the deduction with each household's computed
   Montana tax removes every loss and lowers the 2029 federal revenue change
-  from $7.9M to $6.7M (`scripts/diagnostics/results/salt_proxy_diag_2.153.8.json`).
+  from $5.2M to $5.0M (`scripts/diagnostics/results/salt_proxy_diag_2.153.8_populace.json`).
 - The household calculator calls www.policyengine.org's dashboard API
   through `@policyengine/api-client`, which forwards to the PolicyEngine
   Public API with PolicyEngine's credential (`api.policyengine.org` refuses
