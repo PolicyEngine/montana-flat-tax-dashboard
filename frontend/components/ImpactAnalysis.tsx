@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { useHouseholdImpact } from '@/hooks/useHouseholdImpact';
 import type { HouseholdImpactResponse, HouseholdRequest } from '@/lib/types';
+import { DEFAULT_YEAR, YEAR_SUMMARY, type ReformYear } from '@/lib/montana';
 import ChartWatermark from './ChartWatermark';
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
   triggered: boolean;
   maxEarnings?: number;
   /** When supplied, the chart renders this precomputed payload instead
-   * of firing a live Modal request. */
+   * of firing a live API request. */
   precomputed?: HouseholdImpactResponse | null;
 }
 
@@ -38,10 +39,12 @@ const formatIncome = (value: number) => {
 };
 
 /** Provision display order and labels, shared by the tooltip and the
- *  breakdown panel. For the Montana flat tax the only provision is the
- *  Montana state income-tax change (positive = gain). */
+ *  breakdown panel. Values are from the household's point of view
+ *  (positive = gain) and sum to the net income change. */
 const PROVISION_ROWS = [
-  { key: 'state_tax_change', label: 'Montana income tax change' },
+  { key: 'rate_change', label: 'Lower top income tax rate' },
+  { key: 'eitc_change', label: 'Montana EITC increase' },
+  { key: 'federal_tax_change', label: 'Federal income tax' },
 ] as const;
 
 type ProvisionKey = (typeof PROVISION_ROWS)[number]['key'];
@@ -89,9 +92,7 @@ const HoverTooltip = ({
       </p>
       {provisionPoint ? (
         PROVISION_ROWS.filter(
-          (row) =>
-            Math.abs(provisionPoint[row.key] ?? 0) > 0.5 &&
-            (row.key !== 'state_tax_change' || showState),
+          (row) => Math.abs(provisionPoint[row.key] ?? 0) > 0.5,
         ).map((row) => (
           <p key={row.key} style={{ margin: 0 }}>
             {row.label}: {formatCurrencyWithSign(provisionPoint[row.key] ?? 0)}
@@ -137,7 +138,7 @@ export default function ImpactAnalysis({
           <p className="mt-4 text-gray-600">Calculating impact...</p>
           <p className="mt-2 text-sm text-gray-500 max-w-sm">
             The calculator runs your household through the PolicyEngine API
-            under current law and the flat tax; this can take a few seconds.
+            under current law and the proposal; this can take a few seconds.
           </p>
         </div>
       </div>
@@ -160,6 +161,7 @@ export default function ImpactAnalysis({
 
   if (!data) return null;
 
+  const year = (request?.year ?? DEFAULT_YEAR) as ReformYear;
   const benefitData = data.benefit_at_income;
 
   const federalTaxChangePoint = benefitData.federal_tax_change;
@@ -172,8 +174,8 @@ export default function ImpactAnalysis({
   const stateTaxChangeSeries = data.stateTaxChange;
   const netIncomeChangeSeries = data.netIncomeChange;
 
-  // The flat tax changes Montana state income tax; show the state line
-  // whenever it moves (households above the bracket thresholds).
+  // Both provisions change Montana state income tax; show the state
+  // line whenever it moves.
   const hasStateChange =
     stateTaxChangeSeries.some((v) => Math.abs(v) > 0.5) ||
     Math.abs(stateTaxChangePoint) > 0.5;
@@ -229,14 +231,15 @@ export default function ImpactAnalysis({
       {/* Personal impact */}
       <div>
         <h3 className="text-xl font-bold text-gray-800 mb-4">
-          Your household impact from the Montana flat income tax ({request?.year ?? 2028})
+          Your household impact from the Montana proposal ({year})
         </h3>
         <p className="text-gray-600 mb-4">
           Based on your employment income of <strong>{formatCurrency(request?.income ?? 0)}</strong>,
-          comparing the flat 4.7% Montana income tax to current law. The net
-          change is the reduction in Montana income tax on income above the
-          bracket threshold; households entirely below the threshold see no
-          change.
+          comparing the proposal for tax year {year} ({YEAR_SUMMARY[year]}) to
+          current law. The lower top rate reduces Montana income tax on
+          taxable income above the bracket threshold. The EITC increase
+          raises the Montana credit for households that receive the federal
+          earned income tax credit.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -280,10 +283,10 @@ export default function ImpactAnalysis({
       {/* Chart */}
       <div className="bg-white border rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-1 text-gray-800">
-          Change in net income under the Montana flat income tax
+          Change in net income under the Montana proposal
         </h3>
         <p className="text-sm text-gray-500 mb-4">
-          Reform vs. current law ({request?.year ?? 2028}), by employment income
+          Proposal vs. current law ({year}), by employment income
         </p>
         <ResponsiveContainer width="100%" height={400}>
             <LineChart data={chartData} margin={{ left: 20, right: 20, top: 5, bottom: 5 }}>

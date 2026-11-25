@@ -3,17 +3,21 @@
 import { useState, useEffect } from 'react';
 import MTDistrictMap, { MTDistrictData } from './DynamicDistrictMap';
 import ChartWatermark from './ChartWatermark';
+import { DEFAULT_YEAR, YEAR_SUMMARY, type ReformYear } from '@/lib/montana';
 
 interface Props {
-  year?: number;
+  year?: ReformYear;
 }
 
-// Montana representatives (119th Congress).
+// Montana representatives for the 120th Congress (convenes January 3, 2027),
+// as elected on November 3, 2026. Maintained by hand: update after each
+// election. The proposal's tax years (2028 and 2029) begin during this
+// Congress.
 const MT_REPRESENTATIVES: Record<
   string,
   { name: string; party: 'R' | 'D'; region: string }
 > = {
-  '1': { name: 'Ryan Zinke', party: 'R', region: 'Western Montana' },
+  '1': { name: 'Sam Forstag', party: 'D', region: 'Western Montana' },
   '2': { name: 'Troy Downing', party: 'R', region: 'Eastern Montana' },
 };
 
@@ -23,7 +27,7 @@ function partyColor(party: 'R' | 'D' | undefined) {
   return 'var(--party-none)';
 }
 
-export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
+export default function CongressionalDistrictImpact({ year = DEFAULT_YEAR }: Props) {
   const [data, setData] = useState<MTDistrictData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,9 +127,9 @@ export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
           Montana congressional district impacts ({year})
         </h3>
         <p className="text-gray-600">
-          Average household impact by congressional district under the{' '}
-          <strong>flat 4.7% income tax</strong> vs. current law. Hover over a
-          district for details and click to pin.
+          Average household impact by congressional district under the
+          proposal for tax year {year} ({YEAR_SUMMARY[year]}) vs. current law.
+          Hover over a district for details and click to pin.
         </p>
       </div>
 
@@ -170,7 +174,6 @@ export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
                 <th className="text-left py-3 px-4 font-semibold text-gray-900">Representative</th>
                 <th className="text-right py-3 px-4 font-semibold text-gray-900">Winners</th>
                 <th className="text-right py-3 px-4 font-semibold text-gray-900">Average change</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-900">% of income</th>
               </tr>
             </thead>
             <tbody>
@@ -203,9 +206,6 @@ export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
                     {d.average_household_income_change >= 0 ? '+' : ''}
                     ${d.average_household_income_change.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </td>
-                  <td className="py-3 px-4 text-right text-gray-700">
-                    {(d.relative_household_income_change * 100).toFixed(2)}%
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -216,11 +216,10 @@ export default function CongressionalDistrictImpact({ year = 2028 }: Props) {
       {/* Methodology note */}
       <p className="text-xs text-gray-500">
         Winners are households whose net income rises, matching the statewide
-        tab. District estimates use PolicyEngine&apos;s district-calibrated
-        datasets for tax year 2028, from the same state-calibrated family as
-        the statewide estimate. District figures may not exactly aggregate to
-        the statewide figure because each district file is calibrated
-        independently.
+        tab. District estimates use the Montana households in each district
+        from the same Populace dataset as the statewide estimate, so the two
+        districts add up to the statewide figure. Representatives are those elected in November 2026
+        to the 120th Congress, which convenes in January 2027.
       </p>
     </div>
   );
@@ -294,9 +293,7 @@ function DistrictDetailCard({
             {isPositive ? '+' : ''}
             ${avgChange.toLocaleString('en-US', { maximumFractionDigits: 0 })}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
-            {(district.relative_household_income_change * 100).toFixed(2)}% of income
-          </p>
+          <p className="text-xs text-gray-500 mt-1">per household, per year</p>
         </div>
         <div className="bg-gray-50 rounded-lg p-3">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Winners</p>

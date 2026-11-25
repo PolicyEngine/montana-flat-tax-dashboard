@@ -1,0 +1,1075 @@
+{
+  "years": [
+    {
+      "year": 2028,
+      "thresholds": {
+        "single_top_rate_starts": 66400.0,
+        "joint_top_rate_starts": 132700.0,
+        "proxy_standard_deduction": 5540.0
+      },
+      "households": {
+        "total": 466937.96875,
+        "losers_over_1": 15939.599609375,
+        "winners_over_1": 159111.765625,
+        "state_revenue_change": -89234933.1749211,
+        "federal_revenue_change": 6299786.817933777
+      },
+      "losing_tax_units": {
+        "count": 18214.05078125,
+        "share_itemizing": 1.0,
+        "share_by_filing_status": {
+          "HEAD_OF_HOUSEHOLD": 0.16784019768238068,
+          "JOINT": 0.627390444278717,
+          "SEPARATE": 0.004982129670679569,
+          "SINGLE": 0.19978736340999603
+        },
+        "share_joint_with_one_earner": 0.37885919213294983,
+        "share_actual_mt_tax_before_refundable_unchanged": 0.79859122772327,
+        "share_proxy_puts_largest_earner_in_top_bracket": 1.0,
+        "mean_change_proxy": -227.50831604003906,
+        "mean_change_salt_deduction": -227.5083465576172,
+        "mean_change_actual_mt_tax_before_refundable": -6.903256416320801,
+        "mean_change_federal_tax": 39.003074645996094,
+        "mean_loss": -32.09981918334961,
+        "largest_loss": -411.80859375,
+        "mean_agi": 150373.0625,
+        "mean_baseline_federal_taxable_income": 83505.3359375
+      },
+      "all_itemizers": {
+        "count": 91673.328125,
+        "sum_change_proxy": -62481680.0,
+        "sum_change_salt_deduction": -26924314.0,
+        "sum_change_actual_mt_tax_before_refundable": -43298392.0,
+        "sum_change_federal_tax": 6299787.0
+      },
+      "corrected": {
+        "max_abs_mt_tax_difference_vs_stock_reform": 0.0,
+        "state_revenue_change": -89234933.1749211,
+        "federal_revenue_change": 4003264.8806255953,
+        "losers_over_1": 0.0,
+        "winners_over_1": 162586.90625,
+        "largest_loss": 0.0,
+        "mean_gain_among_winners": 524.2179565429688,
+        "remaining_losers_sample": []
+      }
+    },
+    {
+      "year": 2029,
+      "thresholds": {
+        "single_top_rate_starts": 67800.0,
+        "joint_top_rate_starts": 135600.0,
+        "proxy_standard_deduction": 5540.0
+      },
+      "households": {
+        "total": 468743.0625,
+        "losers_over_1": 16019.7451171875,
+        "winners_over_1": 161424.71875,
+        "state_revenue_change": -152272423.691076,
+        "federal_revenue_change": 11593389.772332817
+      },
+      "losing_tax_units": {
+        "count": 18087.16796875,
+        "share_itemizing": 1.0,
+        "share_by_filing_status": {
+          "HEAD_OF_HOUSEHOLD": 0.16962562501430511,
+          "JOINT": 0.6303280591964722,
+          "SEPARATE": 0.005036474671214819,
+          "SINGLE": 0.1950097680091858
+        },
+        "share_joint_with_one_earner": 0.3810277581214905,
+        "share_actual_mt_tax_before_refundable_unchanged": 0.8190503240130068,
+        "share_proxy_puts_largest_earner_in_top_bracket": 1.0,
+        "mean_change_proxy": -416.9498596191406,
+        "mean_change_salt_deduction": -416.9497985839844,
+        "mean_change_actual_mt_tax_before_refundable": -12.794632911682129,
+        "mean_change_federal_tax": 73.52393341064453,
+        "mean_loss": -60.72929763793945,
+        "largest_loss": -700.80078125,
+        "mean_agi": 155111.453125,
+        "mean_baseline_federal_taxable_income": 87812.890625
+      },
+      "all_itemizers": {
+        "count": 92082.2265625,
+        "sum_change_proxy": -115276064.0,
+        "sum_change_salt_deduction": -49621648.0,
+        "sum_change_actual_mt_tax_before_refundable": -80036856.0,
+        "sum_change_federal_tax": 11593390.0
+      },
+      "corrected": {
+        "max_abs_mt_tax_difference_vs_stock_reform": 0.0,
+        "state_revenue_change": -152272423.691076,
+        "federal_revenue_change": 7350895.378261099,
+        "losers_over_1": 0.0,
+        "winners_over_1": 164729.640625,
+        "largest_loss": 0.0,
+        "mean_gain_among_winners": 879.7523193359375,
+        "remaining_losers_sample": []
+      }
+    }
+  ],
+  "order_test": {
+    "year": 2029,
+    "taxes_first": {
+      "losers_over_1": 16019.7451171875,
+      "winners_over_1": 161424.71875,
+      "state_revenue_change": -152272423.691076,
+      "federal_revenue_change": 11593389.772332817
+    },
+    "net_income_first": {
+      "losers_over_1": 14903.8427734375,
+      "winners_over_1": 161424.71875,
+      "state_revenue_change": -152272423.69015074,
+      "federal_revenue_change": 11446945.379278624
+    },
+    "differences_in_base": {
+      "household:household_net_income": {
+        "records": 100,
+        "weighted": 3349.8056640625
+      },
+      "household:mt_income_tax": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "household:income_tax": {
+        "records": 99,
+        "weighted": 3349.805419921875
+      },
+      "tax_unit:tax_unit_itemizes": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:standard_deduction": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:itemized_taxable_income_deductions": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:state_withheld_income_tax": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:salt_deduction": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:taxable_income": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:income_tax": {
+        "records": 99,
+        "weighted": 3349.805419921875
+      },
+      "tax_unit:mt_files_separately": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:mt_income_tax_before_refundable_credits_unit": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:mt_income_tax": {
+        "records": 0,
+        "weighted": 0.0
+      }
+    },
+    "differences_in_reform": {
+      "household:household_net_income": {
+        "records": 95,
+        "weighted": 3308.116455078125
+      },
+      "household:mt_income_tax": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "household:income_tax": {
+        "records": 95,
+        "weighted": 3308.116455078125
+      },
+      "tax_unit:tax_unit_itemizes": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:standard_deduction": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:itemized_taxable_income_deductions": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:state_withheld_income_tax": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:salt_deduction": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:taxable_income": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:income_tax": {
+        "records": 95,
+        "weighted": 3308.116455078125
+      },
+      "tax_unit:mt_files_separately": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:mt_income_tax_before_refundable_credits_unit": {
+        "records": 0,
+        "weighted": 0.0
+      },
+      "tax_unit:mt_income_tax": {
+        "records": 0,
+        "weighted": 0.0
+      }
+    },
+    "examples": [
+      {
+        "household_index": 370,
+        "tax_unit_index": 488,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          221845.234375,
+          221845.234375
+        ],
+        "base:state_withheld_income_tax": [
+          11705.6875,
+          11705.6875
+        ],
+        "base:salt_deduction": [
+          13111.056640625,
+          13111.056640625
+        ],
+        "base:taxable_income": [
+          22271.171875,
+          22271.171875
+        ],
+        "base:income_tax": [
+          -2572.8828125,
+          -1084.1318359375
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          1065.198486328125,
+          1065.198486328125
+        ],
+        "base:mt_income_tax": [
+          1065.198486328125,
+          1065.198486328125
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          221153.984375,
+          221153.984375
+        ],
+        "reform:state_withheld_income_tax": [
+          11014.439453125,
+          11014.439453125
+        ],
+        "reform:salt_deduction": [
+          12419.80859375,
+          12419.80859375
+        ],
+        "reform:taxable_income": [
+          22962.421875,
+          22962.421875
+        ],
+        "reform:income_tax": [
+          -2503.7578125,
+          -1084.1318359375
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          1065.198486328125,
+          1065.198486328125
+        ],
+        "reform:mt_income_tax": [
+          1065.198486328125,
+          1065.198486328125
+        ]
+      },
+      {
+        "household_index": 874,
+        "tax_unit_index": 1163,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          163346.53125,
+          163346.53125
+        ],
+        "base:state_withheld_income_tax": [
+          8484.734375,
+          8484.734375
+        ],
+        "base:salt_deduction": [
+          11913.8359375,
+          11913.8359375
+        ],
+        "base:taxable_income": [
+          15633.59375,
+          15633.59375
+        ],
+        "base:income_tax": [
+          -681.2427978515625,
+          0.0
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          1078.7359619140625,
+          1078.7359619140625
+        ],
+        "base:mt_income_tax": [
+          1078.7359619140625,
+          1078.7359619140625
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          162936.8125,
+          162936.8125
+        ],
+        "reform:state_withheld_income_tax": [
+          8075.0009765625,
+          8075.0009765625
+        ],
+        "reform:salt_deduction": [
+          11504.1015625,
+          11504.1015625
+        ],
+        "reform:taxable_income": [
+          15961.359375,
+          15961.359375
+        ],
+        "reform:income_tax": [
+          -648.4661865234375,
+          0.0
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          1078.7359619140625,
+          1078.7359619140625
+        ],
+        "reform:mt_income_tax": [
+          1078.7359619140625,
+          1078.7359619140625
+        ]
+      },
+      {
+        "household_index": 874,
+        "tax_unit_index": 1164,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          17200.0,
+          17200.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          187928.0625,
+          187928.0625
+        ],
+        "base:state_withheld_income_tax": [
+          10566.966796875,
+          10566.966796875
+        ],
+        "base:salt_deduction": [
+          10566.966796875,
+          10566.966796875
+        ],
+        "base:taxable_income": [
+          17668.3125,
+          17668.3125
+        ],
+        "base:income_tax": [
+          4911060.5,
+          4911060.5
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          772.190185546875,
+          772.190185546875
+        ],
+        "base:mt_income_tax": [
+          772.190185546875,
+          772.190185546875
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          17200.0,
+          17200.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          186971.34375,
+          186971.34375
+        ],
+        "reform:state_withheld_income_tax": [
+          9610.251953125,
+          9610.251953125
+        ],
+        "reform:salt_deduction": [
+          9610.251953125,
+          9610.251953125
+        ],
+        "reform:taxable_income": [
+          18433.6875,
+          18433.6875
+        ],
+        "reform:income_tax": [
+          4911152.5,
+          4911152.5
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          772.190185546875,
+          772.190185546875
+        ],
+        "reform:mt_income_tax": [
+          772.190185546875,
+          772.190185546875
+        ]
+      },
+      {
+        "household_index": 1327,
+        "tax_unit_index": 1777,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          151811.484375,
+          151811.484375
+        ],
+        "base:state_withheld_income_tax": [
+          8204.150390625,
+          8204.150390625
+        ],
+        "base:salt_deduction": [
+          16636.3671875,
+          16636.3671875
+        ],
+        "base:taxable_income": [
+          23020.0,
+          23020.0
+        ],
+        "base:income_tax": [
+          -908.0,
+          0.0
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          1101.453857421875,
+          1101.453857421875
+        ],
+        "base:mt_income_tax": [
+          1101.453857421875,
+          1101.453857421875
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          151574.125,
+          151574.125
+        ],
+        "reform:state_withheld_income_tax": [
+          7966.8046875,
+          7966.8046875
+        ],
+        "reform:salt_deduction": [
+          16399.01953125,
+          16399.01953125
+        ],
+        "reform:taxable_income": [
+          23209.890625,
+          23209.890625
+        ],
+        "reform:income_tax": [
+          -889.010986328125,
+          0.0
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          1101.453857421875,
+          1101.453857421875
+        ],
+        "reform:mt_income_tax": [
+          1101.453857421875,
+          1101.453857421875
+        ]
+      },
+      {
+        "household_index": 2664,
+        "tax_unit_index": 3525,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          115087.1640625,
+          115087.1640625
+        ],
+        "base:state_withheld_income_tax": [
+          7957.54296875,
+          7957.54296875
+        ],
+        "base:salt_deduction": [
+          9475.341796875,
+          9475.341796875
+        ],
+        "base:taxable_income": [
+          48746.015625,
+          48746.015625
+        ],
+        "base:income_tax": [
+          -3254.705078125,
+          -2316.12255859375
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          2826.015625,
+          2826.015625
+        ],
+        "base:mt_income_tax": [
+          2826.015625,
+          2826.015625
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          114881.78125,
+          114881.78125
+        ],
+        "reform:state_withheld_income_tax": [
+          7752.1650390625,
+          7752.1650390625
+        ],
+        "reform:salt_deduction": [
+          9269.9638671875,
+          9269.9638671875
+        ],
+        "reform:taxable_income": [
+          48910.328125,
+          48910.328125
+        ],
+        "reform:income_tax": [
+          -3234.98779296875,
+          -2316.12255859375
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          2826.015625,
+          2826.015625
+        ],
+        "reform:mt_income_tax": [
+          2826.015625,
+          2826.015625
+        ]
+      },
+      {
+        "household_index": 2699,
+        "tax_unit_index": 3566,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          50946.60546875,
+          50946.60546875
+        ],
+        "base:state_withheld_income_tax": [
+          5473.73974609375,
+          5473.7392578125
+        ],
+        "base:salt_deduction": [
+          5473.73974609375,
+          5473.7392578125
+        ],
+        "base:taxable_income": [
+          59468.06640625,
+          59468.06640625
+        ],
+        "base:income_tax": [
+          -2928.384765625,
+          -2271.5361328125
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          2863.576904296875,
+          2863.576416015625
+        ],
+        "base:mt_income_tax": [
+          2863.576904296875,
+          2863.576416015625
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          50650.125,
+          50650.125
+        ],
+        "reform:state_withheld_income_tax": [
+          5177.2587890625,
+          5177.25830078125
+        ],
+        "reform:salt_deduction": [
+          5177.2587890625,
+          5177.25830078125
+        ],
+        "reform:taxable_income": [
+          59764.546875,
+          59764.546875
+        ],
+        "reform:income_tax": [
+          -2892.80712890625,
+          -2271.5361328125
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          2863.576904296875,
+          2863.576416015625
+        ],
+        "reform:mt_income_tax": [
+          2863.576904296875,
+          2863.576416015625
+        ]
+      },
+      {
+        "household_index": 2970,
+        "tax_unit_index": 3927,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          122486.765625,
+          122486.765625
+        ],
+        "base:state_withheld_income_tax": [
+          6637.7392578125,
+          6637.7392578125
+        ],
+        "base:salt_deduction": [
+          20691.43359375,
+          20691.43359375
+        ],
+        "base:taxable_income": [
+          11810.578125,
+          11810.578125
+        ],
+        "base:income_tax": [
+          -1418.4197998046875,
+          0.0
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          958.54150390625,
+          958.54150390625
+        ],
+        "base:mt_income_tax": [
+          958.54150390625,
+          958.54150390625
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          122039.3984375,
+          122039.3984375
+        ],
+        "reform:state_withheld_income_tax": [
+          6190.369140625,
+          6190.369140625
+        ],
+        "reform:salt_deduction": [
+          20244.0625,
+          20244.0625
+        ],
+        "reform:taxable_income": [
+          12168.46875,
+          12168.46875
+        ],
+        "reform:income_tax": [
+          -1382.6307373046875,
+          0.0
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          958.54150390625,
+          958.54150390625
+        ],
+        "reform:mt_income_tax": [
+          958.54150390625,
+          958.54150390625
+        ]
+      },
+      {
+        "household_index": 3329,
+        "tax_unit_index": 4416,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          64366.96875,
+          64366.96875
+        ],
+        "base:state_withheld_income_tax": [
+          4948.17919921875,
+          4948.17919921875
+        ],
+        "base:salt_deduction": [
+          4948.17919921875,
+          4948.17919921875
+        ],
+        "base:taxable_income": [
+          46162.109375,
+          46162.109375
+        ],
+        "base:income_tax": [
+          -837.804443359375,
+          -244.0224609375
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          2565.560302734375,
+          2565.560302734375
+        ],
+        "base:mt_income_tax": [
+          2565.560302734375,
+          2565.560302734375
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          34450.0,
+          34450.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          64272.96875,
+          64272.96875
+        ],
+        "reform:state_withheld_income_tax": [
+          4854.1787109375,
+          4854.1787109375
+        ],
+        "reform:salt_deduction": [
+          4854.1787109375,
+          4854.1787109375
+        ],
+        "reform:taxable_income": [
+          46256.109375,
+          46256.109375
+        ],
+        "reform:income_tax": [
+          -826.524658203125,
+          -244.0224609375
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          2565.560302734375,
+          2565.560302734375
+        ],
+        "reform:mt_income_tax": [
+          2565.560302734375,
+          2565.560302734375
+        ]
+      },
+      {
+        "household_index": 3769,
+        "tax_unit_index": 5002,
+        "base:tax_unit_itemizes": [
+          0.0,
+          0.0
+        ],
+        "base:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          4144.22509765625,
+          4144.22509765625
+        ],
+        "base:state_withheld_income_tax": [
+          0.0,
+          0.0
+        ],
+        "base:salt_deduction": [
+          0.0,
+          0.0
+        ],
+        "base:taxable_income": [
+          0.0,
+          0.0
+        ],
+        "base:income_tax": [
+          0.0,
+          0.0
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax": [
+          0.0,
+          0.0
+        ],
+        "reform:tax_unit_itemizes": [
+          0.0,
+          0.0
+        ],
+        "reform:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          4144.22509765625,
+          4144.22509765625
+        ],
+        "reform:state_withheld_income_tax": [
+          0.0,
+          0.0
+        ],
+        "reform:salt_deduction": [
+          0.0,
+          0.0
+        ],
+        "reform:taxable_income": [
+          0.0,
+          0.0
+        ],
+        "reform:income_tax": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "household_index": 3769,
+        "tax_unit_index": 5003,
+        "base:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "base:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "base:itemized_taxable_income_deductions": [
+          61188.20703125,
+          61188.20703125
+        ],
+        "base:state_withheld_income_tax": [
+          4102.26806640625,
+          4102.267578125
+        ],
+        "base:salt_deduction": [
+          4102.26806640625,
+          4102.267578125
+        ],
+        "base:taxable_income": [
+          27948.875,
+          27948.8671875
+        ],
+        "base:income_tax": [
+          -9024.134765625,
+          -8531.86328125
+        ],
+        "base:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "base:mt_income_tax_before_refundable_credits_unit": [
+          1836.517822265625,
+          1836.5174560546875
+        ],
+        "base:mt_income_tax": [
+          1836.517822265625,
+          1836.5174560546875
+        ],
+        "reform:tax_unit_itemizes": [
+          1.0,
+          1.0
+        ],
+        "reform:standard_deduction": [
+          25800.0,
+          25800.0
+        ],
+        "reform:itemized_taxable_income_deductions": [
+          61069.5078125,
+          61069.5078125
+        ],
+        "reform:state_withheld_income_tax": [
+          3983.570068359375,
+          3983.56982421875
+        ],
+        "reform:salt_deduction": [
+          3983.570068359375,
+          3983.56982421875
+        ],
+        "reform:taxable_income": [
+          28067.57421875,
+          28067.56640625
+        ],
+        "reform:income_tax": [
+          -9009.890625,
+          -8531.86328125
+        ],
+        "reform:mt_files_separately": [
+          0.0,
+          0.0
+        ],
+        "reform:mt_income_tax_before_refundable_credits_unit": [
+          1836.517822265625,
+          1836.5174560546875
+        ],
+        "reform:mt_income_tax": [
+          1836.517822265625,
+          1836.5174560546875
+        ]
+      }
+    ]
+  }
+}

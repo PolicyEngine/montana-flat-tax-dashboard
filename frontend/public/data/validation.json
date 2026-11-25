@@ -1,55 +1,53 @@
 {
-  "schema_version": 3,
-  "pinned_run": {
-    "label": "This dashboard (Montana flat 4.7%, state-calibrated MT.h5 run)",
-    "year": 2028,
-    "net_cost": -118249488.03470087,
-    "poverty_percent_change": -0.021948858587905323,
-    "child_poverty_percent_change": -0.001152296462833958,
-    "deep_poverty_percent_change": -0.021948858587905323,
-    "deep_child_poverty_percent_change": -0.001152296462833958,
-    "dataset": "policyengine-us-data states/MT.h5 (state-calibrated)"
-  },
-  "expected_band": {
-    "label": "Montana Department of Revenue (2029 Biennium Outlook Report, June 2026)",
-    "net_cost": -130000000,
-    "source": "Montana Department of Revenue (2029 Biennium Outlook Report, June 2026)"
-  },
+  "schema_version": 4,
+  "runs": [
+    {
+      "year": 2028,
+      "state_revenue_impact": -82308966.32470937,
+      "rate_cut_state_revenue_impact": -65998120.76448938,
+      "eitc_state_revenue_impact": -16310845.56021998,
+      "baseline_state_income_tax": 2339293292.1280484,
+      "poverty_percent_change": -1.386184648868038,
+      "child_poverty_percent_change": -4.626493969931511
+    },
+    {
+      "year": 2029,
+      "state_revenue_impact": -138853047.41938138,
+      "rate_cut_state_revenue_impact": -122573856.08180946,
+      "eitc_state_revenue_impact": -16279191.33757191,
+      "baseline_state_income_tax": 2466154486.316229,
+      "poverty_percent_change": -1.2606272393082902,
+      "child_poverty_percent_change": -4.198744821817029
+    }
+  ],
   "provenance": {
-    "policyengine_us": "1.680.0",
-    "dataset": "hf://policyengine/policyengine-us-data/states/MT.h5",
+    "policyengine_us": "2.153.8",
+    "dataset": "hf://policyengine/populace-us/populace_us_2024_acs_local.h5@populace-us-2024-buildo-acs-local-766b7c7-20261017T030317Z, Montana households (state_fips 30)",
     "reform": {
-      "gov.states.mt.tax.income.main.single[0].rate": {
-        "2028-01-01.2100-12-31": 0.047
-      },
       "gov.states.mt.tax.income.main.single[1].rate": {
-        "2028-01-01.2100-12-31": 0.047
-      },
-      "gov.states.mt.tax.income.main.joint[0].rate": {
-        "2028-01-01.2100-12-31": 0.047
+        "2028-01-01.2028-12-31": 0.05,
+        "2029-01-01.2100-12-31": 0.047
       },
       "gov.states.mt.tax.income.main.joint[1].rate": {
-        "2028-01-01.2100-12-31": 0.047
-      },
-      "gov.states.mt.tax.income.main.head_of_household[0].rate": {
-        "2028-01-01.2100-12-31": 0.047
+        "2028-01-01.2028-12-31": 0.05,
+        "2029-01-01.2100-12-31": 0.047
       },
       "gov.states.mt.tax.income.main.head_of_household[1].rate": {
-        "2028-01-01.2100-12-31": 0.047
-      },
-      "gov.states.mt.tax.income.main.separate[0].rate": {
-        "2028-01-01.2100-12-31": 0.047
+        "2028-01-01.2028-12-31": 0.05,
+        "2029-01-01.2100-12-31": 0.047
       },
       "gov.states.mt.tax.income.main.separate[1].rate": {
-        "2028-01-01.2100-12-31": 0.047
-      },
-      "gov.states.mt.tax.income.main.surviving_spouse[0].rate": {
-        "2028-01-01.2100-12-31": 0.047
+        "2028-01-01.2028-12-31": 0.05,
+        "2029-01-01.2100-12-31": 0.047
       },
       "gov.states.mt.tax.income.main.surviving_spouse[1].rate": {
-        "2028-01-01.2100-12-31": 0.047
+        "2028-01-01.2028-12-31": 0.05,
+        "2029-01-01.2100-12-31": 0.047
+      },
+      "gov.states.mt.tax.income.credits.eitc.match": {
+        "2028-01-01.2100-12-31": 0.3
       }
     },
-    "run_timestamp": "2026-07-29T16:00:50.858322+00:00"
+    "run_timestamp": "2026-11-25T14:31:11.568636+00:00"
   }
 }

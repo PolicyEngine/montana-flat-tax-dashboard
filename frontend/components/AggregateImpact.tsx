@@ -3,11 +3,9 @@
 import { useState } from 'react';
 import {
   useAggregateImpact,
-  useTenYearTotal,
-  useTenYearFederalTotal,
-  useTenYearStateTotal,
   YearNotAvailableError,
 } from '@/hooks/useAggregateImpact';
+import { DEFAULT_YEAR, YEAR_SUMMARY, type ReformYear } from '@/lib/montana';
 import {
   BarChart,
   Bar,
@@ -31,11 +29,6 @@ const COLORS = {
   positive: 'var(--chart-positive)',
   negative: 'var(--chart-negative)',
 };
-
-// Montana's state-calibrated dataset (MT.h5) is a single-year (2028)
-// build, so only tax year 2028 — the reform's first effective year and
-// the year the Montana DOR anchor (FY2029) corresponds to — is shown.
-const YEARS = [2028];
 
 // Shared chart margins
 const CHART_MARGIN = { top: 20, right: 20, bottom: 30, left: 60 };
@@ -72,23 +65,17 @@ function CustomTooltip({ active, payload, label, formatter }: {
 
 interface Props {
   triggered: boolean;
+  /** Tax year to show; the page-level year toggle sets it. */
+  year?: ReformYear;
 }
 
-export default function AggregateImpact({ triggered }: Props) {
-  const [selectedYear, setSelectedYear] = useState(2028);
+export default function AggregateImpact({ triggered, year = DEFAULT_YEAR }: Props) {
+  const selectedYear = year;
   const { data, isLoading, error } = useAggregateImpact(triggered, selectedYear);
-  const { data: multiYearTotal } = useTenYearTotal(triggered);
-  const { data: multiYearFederal } = useTenYearFederalTotal(triggered);
-  const { data: multiYearState } = useTenYearStateTotal(triggered);
   const [activeSection, setActiveSection] = useState<'fiscal' | 'distributional' | 'winners' | 'poverty'>('fiscal');
   const [distMode, setDistMode] = useState<'relative' | 'absolute'>('relative');
 
   if (!triggered) return null;
-
-  // The analysis covers a single tax year (2028) — the reform's first
-  // effective year and the year the Montana DOR anchor corresponds to —
-  // so no year selector is shown. YEARS[0] is used throughout.
-  const yearSelector = null;
 
   if (isLoading) {
     return (
@@ -107,7 +94,6 @@ export default function AggregateImpact({ triggered }: Props) {
     return (
       <div className="space-y-6">
         <h2 className="text-2xl font-bold text-primary">Statewide impact analysis</h2>
-        {yearSelector}
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
           <h3 className="text-gray-800 font-semibold mb-2">
             {isMissingYear
@@ -117,7 +103,7 @@ export default function AggregateImpact({ triggered }: Props) {
           <p className="text-gray-600 font-medium mb-2">{errorMessage}</p>
           <p className="text-sm text-gray-500 mt-4">
             {isMissingYear
-              ? 'Select another year above, or check back after the data pipeline has produced this year.'
+              ? 'Select another tax year above, or check back after the data pipeline has produced this year.'
               : 'Precomputed data has not been generated yet.'}
           </p>
         </div>
@@ -151,10 +137,12 @@ export default function AggregateImpact({ triggered }: Props) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-primary">Statewide impact analysis</h2>
-
-      {/* Year selector */}
-      {yearSelector}
+      <div>
+        <h2 className="text-2xl font-bold text-primary">Statewide impact analysis</h2>
+        <p className="text-sm text-gray-600 mt-1">
+          Tax year {selectedYear} ({YEAR_SUMMARY[selectedYear]}), compared with current law.
+        </p>
+      </div>
 
       {/* Sub-navigation */}
       <div className="flex flex-wrap gap-2">
@@ -198,7 +186,7 @@ export default function AggregateImpact({ triggered }: Props) {
                       {formatMillions(stateImpact)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      Change in annual Montana individual income-tax revenue under the flat 4.7% rate.
+                      Change in Montana individual income tax revenue from both provisions.
                     </p>
                   </div>
                   <div className="rounded-lg p-5 border bg-gray-50 border-gray-300">
@@ -207,43 +195,40 @@ export default function AggregateImpact({ triggered }: Props) {
                       {formatMillions(federalImpact)}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      Accrues to the federal government, not Montana: a smaller Montana tax bill slightly reduces itemizers&apos; state and local tax (SALT) deductions.
+                      Accrues to the federal government, not Montana: a smaller Montana tax bill reduces itemizers&apos; federal deductions for state and local taxes (SALT).
                     </p>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
                   Montana&apos;s own fiscal cost is the {formatMillions(stateImpact)} state figure. The federal interaction is shown for completeness and does not affect the Montana budget.
                 </p>
-              </div>
-            );
-          })()}
-
-          {/* Multi-year window - state revenue (hidden until all years exist) */}
-          {multiYearTotal != null && multiYearState != null && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">Multi-year window (2028-2035)</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className={`rounded-lg p-5 border ${
-                  multiYearState >= 0 ? 'bg-green-50 border-success' : 'bg-red-50 border-red-300'
-                }`}>
-                  <p className="text-sm text-gray-700 mb-2">Montana state income tax (2028-2035)</p>
-                  <p className={`text-2xl font-bold ${
-                    multiYearState >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {formatMillions(multiYearState)}
-                  </p>
-                </div>
-                {multiYearFederal != null && (
-                  <div className="rounded-lg p-5 border bg-gray-50 border-gray-300">
-                    <p className="text-sm text-gray-700 mb-2">Federal income tax (2028-2035)</p>
-                    <p className="text-2xl font-bold text-gray-700">
-                      {formatMillions(multiYearFederal)}
+                {b.rate_cut_state_revenue_impact != null && b.eitc_state_revenue_impact != null && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">By provision ({selectedYear})</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="rounded-lg p-5 border bg-white border-gray-300">
+                        <p className="text-sm text-gray-700 mb-2">
+                          {selectedYear === 2028 ? 'Top rate 5.4% to 5.0%' : 'Top rate 5.4% to 4.7% (flat rate)'}
+                        </p>
+                        <p className="text-2xl font-bold text-gray-800">
+                          {formatMillions(b.rate_cut_state_revenue_impact)}
+                        </p>
+                      </div>
+                      <div className="rounded-lg p-5 border bg-white border-gray-300">
+                        <p className="text-sm text-gray-700 mb-2">EITC 20% to 30% of the federal credit</p>
+                        <p className="text-2xl font-bold text-gray-800">
+                          {formatMillions(b.eitc_state_revenue_impact)}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Each provision is modeled on its own against current law. Montana state income tax revenue only.
                     </p>
                   </div>
                 )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Income bracket table */}
           <div>
@@ -253,9 +238,9 @@ export default function AggregateImpact({ triggered }: Props) {
                 <thead>
                   <tr className="border-b border-gray-300">
                     <th className="text-left px-4 py-3 font-medium text-gray-900">Income bracket</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-900">Affected tax units</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-900">Total impact</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-900">Average impact</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-900">Households gaining</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-900">Total gain</th>
+                    <th className="text-right px-4 py-3 font-medium text-gray-900">Average gain</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -277,7 +262,7 @@ export default function AggregateImpact({ triggered }: Props) {
               </table>
             </div>
             <p className="text-xs text-gray-500 mt-3 italic">
-              Income brackets use an expanded income measure at the tax unit level, following JCT methodology. Expanded income includes AGI plus tax-exempt interest, employer payroll taxes, workers&apos; compensation, nontaxable Social Security benefits, and foreign earned income exclusion. A tax unit is the unit that files a tax return (single filer or married couple filing jointly). Because lower earners already pay 4.7%, the benefit is concentrated among higher-income brackets.
+              Households are grouped by federal adjusted gross income. The table counts households whose net income rises and shows their total and average gain. The EITC increase reaches households with earnings in the federal credit&apos;s range; the rate cut reaches households with taxable income above the bracket thresholds.
             </p>
           </div>
         </div>
@@ -367,7 +352,7 @@ export default function AggregateImpact({ triggered }: Props) {
               </ResponsiveContainer>
             <ChartWatermark />
             <p className="text-xs text-gray-500 mt-3 italic">
-              Distributional impacts are calculated at the household level. A household may contain multiple tax units (e.g., an adult child living with parents who files separately). The flat rate cuts the top rate from 5.4% to 4.7% on income above the bracket thresholds, so the gain rises with income; households entirely below the thresholds see no change.
+              Distributional impacts are calculated at the household level. A household may contain multiple tax units (e.g., an adult child living with parents who files separately). Deciles rank households by net income. Gains in the lower deciles come from the EITC increase; gains in the upper deciles come from the lower top rate, which applies only to taxable income above the bracket thresholds.
             </p>
           </div>
         );
@@ -405,7 +390,7 @@ export default function AggregateImpact({ triggered }: Props) {
               <div className="rounded-lg p-6 border" style={{ backgroundColor: 'var(--chart-winners-bg)', borderColor: COLORS.positive }}>
                 <p className="text-sm text-gray-700 mb-2">Winners</p>
                 <p className="text-3xl font-bold" style={{ color: COLORS.gainMore5 }}>{data.winners_rate.toFixed(1)}%</p>
-                <p className="text-xs text-gray-600 mt-1">{Math.round(data.winners).toLocaleString()} residents gain</p>
+                <p className="text-xs text-gray-600 mt-1">{Math.round(data.winners).toLocaleString()} households gain</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-6 border border-gray-300">
                 <p className="text-sm text-gray-700 mb-2">No change</p>
@@ -416,7 +401,7 @@ export default function AggregateImpact({ triggered }: Props) {
               <div className="rounded-lg p-6 border" style={{ backgroundColor: 'var(--chart-losers-bg)', borderColor: COLORS.loseMore5 }}>
                 <p className="text-sm text-gray-700 mb-2">Losers</p>
                 <p className="text-3xl font-bold" style={{ color: COLORS.loseMore5 }}>{data.losers_rate.toFixed(1)}%</p>
-                <p className="text-xs text-gray-600 mt-1">{Math.round(data.losers).toLocaleString()} residents lose</p>
+                <p className="text-xs text-gray-600 mt-1">{Math.round(data.losers).toLocaleString()} households lose</p>
               </div>
             </div>
 
@@ -446,7 +431,7 @@ export default function AggregateImpact({ triggered }: Props) {
                   ))}
                 </div>
                 <p className="text-xs text-gray-500 mt-3 italic">
-                  Winners and losers count residents: a person gains or loses when their household&apos;s net income changes by more than $1. A small share of households can lose because a smaller Montana tax bill reduces their federal SALT deduction, slightly raising federal tax.
+                  The cards above count households whose net income changes by more than $1. The chart counts residents by how much their household&apos;s net income changes as a share of income; changes under 0.1% show as no change. Households that show a loss all itemize federal deductions. The model bases their federal deduction for state and local taxes on an estimate of Montana income tax that subtracts the standard deduction instead of their itemized deductions, so the estimate exceeds their computed Montana tax and puts more of their income in the top bracket. Under the proposal the estimate falls while their computed Montana tax barely changes, so their modeled federal tax rises. This is a limit of the model, not a provision of the proposal.
                 </p>
               </div>
             </div>
@@ -455,26 +440,94 @@ export default function AggregateImpact({ triggered }: Props) {
       })()}
 
       {/* ===== POVERTY IMPACT ===== */}
-      {activeSection === 'poverty' && (
-        <div className="space-y-6">
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              No change to poverty
-            </h3>
-            <p className="text-gray-700 max-w-prose">
-              The flat 4.7% rate only lowers tax on income above Montana&apos;s
-              bracket thresholds (about $65,000 for single filers and $130,000
-              for joint filers), so its benefit goes to higher earners.
-              Households in or near poverty already pay the 4.7% lower rate or
-              owe no Montana income tax, so the reform leaves the poverty rate
-              unchanged.
+      {activeSection === 'poverty' && (() => {
+        const pov = data.poverty;
+        const povertyMetrics = [
+          { label: 'Overall poverty', ...pov.poverty.all },
+          { label: 'Child poverty', ...pov.poverty.child },
+          { label: 'Deep poverty', ...pov.deep_poverty.all },
+          { label: 'Deep child poverty', ...pov.deep_poverty.child },
+        ];
+        const chartData = povertyMetrics.map((m) => ({
+          ...m,
+          pctChange: m.baseline !== 0 ? ((m.reform - m.baseline) / m.baseline) * 100 : 0,
+        }));
+
+        // Nice axis around zero. The floor keeps an all-zero series from
+        // producing a zero-width axis.
+        const pctValues = chartData.map((d) => d.pctChange);
+        const minVal = Math.min(0, ...pctValues);
+        const maxVal = Math.max(0, ...pctValues);
+        const maxAbs = Math.max(Math.abs(minVal), Math.abs(maxVal), 0.1);
+        const niceStep = (() => {
+          const rough = maxAbs / 3;
+          const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+          const residual = rough / mag;
+          if (residual <= 1) return mag;
+          if (residual <= 2) return 2 * mag;
+          if (residual <= 5) return 5 * mag;
+          return 10 * mag;
+        })();
+        const niceMin = Math.floor(minVal / niceStep) * niceStep;
+        const niceMax = Math.max(Math.ceil(maxVal / niceStep) * niceStep, 0);
+        const niceTicks = Array.from(
+          { length: Math.round((niceMax - niceMin) / niceStep) + 1 },
+          (_, i) => niceMin + i * niceStep,
+        );
+        const tickDigits = niceStep >= 1 ? 0 : niceStep >= 0.1 ? 1 : 2;
+        // A tick of "-0" or "+0.0" reads as an error; show a bare zero.
+        const fmtTick = (v: number) =>
+          Math.abs(v) < niceStep / 2 ? '0%' : `${v > 0 ? '+' : ''}${v.toFixed(tickDigits)}%`;
+
+        // metrics.csv stores poverty rates already in percent
+        // (15.12 = 15.12%). Do not rescale.
+        const formatRate = (v: number) => `${v.toFixed(2)}%`;
+
+        return (
+          <div className="space-y-6">
+            {/* Current law vs proposal rates */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                Poverty rates: current law vs proposal ({selectedYear})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {povertyMetrics.map((m) => (
+                  <div key={m.label} className="rounded-lg p-4 border border-gray-200 bg-gray-50">
+                    <p className="text-sm text-gray-700 mb-1">{m.label}</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      {formatRate(m.baseline)} <span className="text-gray-400 font-normal">→</span> {formatRate(m.reform)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Change in poverty rates (%)</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData} margin={CHART_MARGIN}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
+                    <XAxis dataKey="label" tick={TICK_STYLE} stroke="var(--chart-axis)" />
+                    <YAxis domain={[niceMin, niceMax]} ticks={niceTicks} tickFormatter={fmtTick} tick={TICK_STYLE} stroke="var(--chart-axis)" width={70} />
+                    <Tooltip content={<CustomTooltip formatter={(v) => `${v > 0 ? '+' : ''}${v.toFixed(2)}%`} />} />
+                    <ReferenceLine y={0} stroke="var(--chart-axis)" strokeWidth={1} />
+                    <Bar dataKey="pctChange" name="Change (%)" radius={[2, 2, 0, 0]}>
+                      {chartData.map((m, i) => (
+                        <Cell key={i} fill={m.pctChange <= 0 ? COLORS.positive : COLORS.negative} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              <ChartWatermark />
+            </div>
+            <p className="text-xs text-gray-500 italic max-w-prose">
+              Poverty uses the Supplemental Poverty Measure (SPM). Deep poverty means resources below half the poverty threshold. The chart shows the percent change in each rate; a negative value means the rate falls. The change comes from the EITC increase, a refundable credit that raises after-tax income for households with earnings; the rate cut applies to taxable income above the bracket thresholds. The dataset&apos;s current-law SPM poverty rate for Montana, about 6% in 2029, is below the Census Bureau&apos;s three-year average of 9.5% for 2023 to 2025, and the change rests on a small number of sampled Montana households near the poverty threshold.
             </p>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <p className="text-sm text-gray-500 bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
-        These estimates are static: they do not capture behavioral responses such as changes in labor supply, tax avoidance, or migration. Poverty uses the Supplemental Poverty Measure (SPM).
+        These estimates are static: they do not capture behavioral responses such as changes in labor supply, tax avoidance, or migration.
       </p>
     </div>
   );

@@ -1,3 +1,5 @@
 district,average_household_income_change,relative_household_income_change,winners_share,losers_share,poverty_pct_change,child_poverty_pct_change,state,year
-MT-01,149.51,0.002445,0.1974,0.0227,-0.01,-0.0,MT,2028
-MT-02,316.64,0.003039,0.2383,0.031,-0.05,-0.0,MT,2028
+MT-01,182.8,0.001336,0.387,0.0103,-2.03,-7.24,MT,2028
+MT-02,190.12,0.001425,0.4023,0.0021,-0.74,-2.26,MT,2028
+MT-01,298.02,0.002127,0.3919,0.0102,-2.03,-7.28,MT,2029
+MT-02,327.19,0.002393,0.4098,0.0022,-0.48,-1.38,MT,2029
